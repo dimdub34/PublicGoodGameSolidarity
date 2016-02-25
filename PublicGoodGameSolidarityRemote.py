@@ -22,11 +22,17 @@ class RemotePGGS(IRemote):
             "PGGS_periodpayoff", "PGGS_cumulativepayoff"
         ]
         self.histo.append(texts_PGGS.get_histo_header())
+        self._sinistred = False
 
     def remote_configure(self, params):
         logger.info(u"{} configure".format(self.le2mclt.uid))
         for k, v in params.iteritems():
             setattr(pms, k, v)
+
+    def remote_display_sinistre(self, sinistred):
+        self._sinistred = sinistred
+        return self.le2mclt.get_remote("base").remote_display_information(
+            texts_PGGS.get_text_sinistred(sinistred))
 
     def remote_newperiod(self, periode):
         logger.info(u"{} Period {}".format(self.le2mclt.uid, periode))
@@ -34,10 +40,10 @@ class RemotePGGS(IRemote):
         if self.currentperiod == 1:
             del self.histo[1:]
 
-    def remote_display_decision(self, sinistred):
+    def remote_display_decision(self):
         logger.info(u"{} Decision".format(self.le2mclt.uid))
         if self.le2mclt.simulation:
-            max = pms.DECISION_MAX if not sinistred else 0
+            max = pms.DECISION_MAX if not self._sinistred else 0
             decision = \
                 random.randrange(
                     pms.DECISION_MIN, max + pms.DECISION_STEP,
@@ -48,7 +54,8 @@ class RemotePGGS(IRemote):
             defered = defer.Deferred()
             ecran_decision = GuiDecision(
                 defered, self.le2mclt.automatique,
-                self.le2mclt.screen, self.currentperiod, self.histo, sinistred)
+                self.le2mclt.screen, self.currentperiod, self.histo,
+                self._sinistred)
             ecran_decision.show()
             return defered
 

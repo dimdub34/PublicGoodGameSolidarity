@@ -20,7 +20,6 @@ class GuiDecision(QtGui.QDialog):
         self._defered = defered
         self._automatique = automatique
         self._historique = GuiHistorique(self, historique)
-        self._historique.widtableview.set_size(600, 400)
 
         layout = QtGui.QVBoxLayout(self)
 

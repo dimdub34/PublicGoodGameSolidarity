@@ -2,17 +2,13 @@
 
 import logging
 from datetime import datetime
-from collections import OrderedDict
 from twisted.internet import defer
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, Float, ForeignKey, Boolean
 from server.servbase import Base
 from server.servparties import Partie
-from util.utili18n import le2mtrans
 from util.utiltools import get_module_attributes
 import PublicGoodGameSolidarityParams as pms
-import PublicGoodGameSolidarityTexts as texts
-from PublicGoodGameSolidarityTexts import _PGGS
 
 
 logger = logging.getLogger("le2m")
@@ -78,11 +74,7 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_infosinistre(self):
         logger.debug(u"{} info sinistre".format(self.joueur))
-        txt = _PGGS(u"Your group {}").format(
-            _PGGS(u"is sinistred") if self._sinistred else
-            _PGGS(u"is not sinistred"))
-        yield (self.joueur.get_part("base").remote.callRemote(
-            "display_information", txt))
+        yield (self.remote.callRemote("display_sinistre", self._sinistred))
         self.joueur.info(u"Ok")
         self.joueur.remove_waitmode()
 
@@ -92,13 +84,12 @@ class PartiePGGS(Partie):
         self._vote = yield (self.remote.callRemote("display_vote"))
         self.joueur.info(pms.get_treatment(self._vote))
 
-
     @defer.inlineCallbacks
     def display_decision(self):
         logger.debug(u"{} Decision".format(self.joueur))
         debut = datetime.now()
         self.currentperiod.PGGS_groupaccount = yield(self.remote.callRemote(
-            "display_decision", self._sinistred))
+            "display_decision"))
         self.currentperiod.PGGS_decisiontime = (datetime.now() - debut).seconds
         if not self.sinistred:
             self.currentperiod.PGGS_indivaccount = \
@@ -119,7 +110,7 @@ class PartiePGGS(Partie):
         mpcr = pms.MPCR_NORM
         if pms.TREATMENT == pms.get_treatment("sol_auto") or \
                 (pms.TREATMENT == pms.get_treatment("sol_vote") and
-                 self.currentperiod.PGGS_votemajority == pms.get_vote(("pour"))):
+                 self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
             mpcr = pms.MPCR_SOL
         self.currentperiod.PGGS_groupaccountpayoff = \
             self.currentperiod.PGGS_groupaccountsum * mpcr
@@ -152,7 +143,8 @@ class PartiePGGS(Partie):
             "display_summary", self.currentperiod.todict()))
         self.joueur.info("Ok")
         self.joueur.remove_waitmode()
-    
+
+    @defer.inlineCallbacks
     def compute_partpayoff(self):
         logger.debug(u"{} Part Payoff".format(self.joueur))
 
@@ -160,7 +152,7 @@ class PartiePGGS(Partie):
         self.PGGS_gain_euros = \
             float(self.PGGS_gain_ecus) * float(pms.TAUX_CONVERSION)
         yield (self.remote.callRemote(
-            "display_payoffs", self.PGGS_gain_euros, self.PGGS_gain_ecus))
+            "set_payoffs", self.PGGS_gain_euros, self.PGGS_gain_ecus))
 
         logger.info(u'{} Payoff ecus {} Payoff euros {:.2f}'.format(
             self.joueur, self.PGGS_gain_ecus, self.PGGS_gain_euros))

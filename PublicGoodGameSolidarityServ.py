@@ -47,7 +47,6 @@ class Serveur(object):
                 le2mtrans(u"Treatment") + u": {}".format(
                     pms.get_treatment(pms.TREATMENT)))
 
-
     @defer.inlineCallbacks
     def _demarrer(self):
         """
@@ -107,14 +106,14 @@ class Serveur(object):
                          sinistred_yes[i])]
 
             self._le2mserv.gestionnaire_graphique.infoserv(
-                text_PGGS.trans_PGGS(u"Not sinistred") + u": {}").format(
+                text_PGGS.trans_PGGS(u"Not sinistred") + u": {}".format(
                     [u"G{}".format(g.split("_")[2]) for g in
-                     self._sinistred.viewkeys()])
+                     self._sinistred.viewkeys()]))
 
             self._le2mserv.gestionnaire_graphique.infoserv(
-                text_PGGS.trans_PGGS(u"Sinistred") + u": {}").format(
+                text_PGGS.trans_PGGS(u"Sinistred") + u": {}".format(
                     [u"G{}".format(v["paired"].split("_")[2]) for v in
-                     self._sinistred.viewvalues()])
+                     self._sinistred.viewvalues()]))
 
             for v in self._sinistred.viewvalues():
                 for j in v["comp"]:
@@ -138,9 +137,9 @@ class Serveur(object):
                 for k, v in self._sinistred.viewitems():
                     votes_for = pms.TAILLE_GROUPES - \
                                 sum([j.currentperiod.vote for j in v["comp"]])
-                    vote_majority = pms.get_vote("pour") if \
+                    vote_majority = pms.IN_FAVOR if \
                         votes_for > pms.TAILLE_GROUPES / 2 else \
-                        pms.get_vote("contre")
+                        pms.AGAINST
                     for j in v["comp"]:
                         j.set_votes(votesfor=votes_for,
                                     votemajority=vote_majority)
@@ -150,7 +149,7 @@ class Serveur(object):
 
                     self._le2mserv.gestionnaire_graphique.infoserv(
                         u"G{}: {}".format(k.split("_")[2],
-                                          pms.get_vote(vote_majority)))
+                                          text_PGGS.VOTES.get(vote_majority)))
 
         # Start ================================================================
         for period in xrange(1 if pms.NOMBRE_PERIODES else 0,
@@ -196,7 +195,7 @@ class Serveur(object):
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     text_PGGS.trans_PGGS(u"Solidarity"))
                 for v in self._sinistred.viewvalues():
-                    if v["comp"][0].votemajority == pms.get_vote("pour"):
+                    if v["comp"][0].votemajority == pms.IN_FAVOR:
                         for j in v["paired_comp"]:
                             j.currentperiod.PGGS_groupaccountsum = \
                                 v["comp"][0].currentperiod.PGGS_groupaccountsum

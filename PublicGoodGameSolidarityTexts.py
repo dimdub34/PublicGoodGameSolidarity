@@ -30,9 +30,16 @@ def get_histo_header():
     ]
 
 
+def get_text_sinistred(sinistred):
+    txt = trans_PGGS(u"Your group") + u" {}".format(
+        trans_PGGS(u"is sinistred") if sinistred else
+        trans_PGGS(u"is not sinistred"))
+    return txt
+
+
 def get_text_explanation():
     txt = u"Explanation text"
-    return
+    return txt
 
 
 def get_text_summary(period_content):

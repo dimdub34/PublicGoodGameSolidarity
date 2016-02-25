@@ -35,14 +35,3 @@ def get_treatment(code_or_name):
                 return k
     else:
         return None
-
-
-def get_vote(code_or_name):
-    if type(code_or_name) is int:
-        return VOTES.get(code_or_name, None)
-    elif type(code_or_name) is str:
-        for k, v in VOTES.viewitems():
-            if v == code_or_name.lower():
-                return k
-    else:
-        return None

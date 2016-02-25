@@ -30,9 +30,14 @@ class RemotePGGS(IRemote):
             setattr(pms, k, v)
 
     def remote_display_sinistre(self, sinistred):
+        logger.info(u"{} display_sinistre".format(self.le2mclt.uid))
         self._sinistred = sinistred
         return self.le2mclt.get_remote("base").remote_display_information(
             texts_PGGS.get_text_sinistred(sinistred))
+
+    def remote_display_vote(self):
+        logger.info(u"{} display_vote".format(self.le2mclt.uid))
+
 
     def remote_newperiod(self, periode):
         logger.info(u"{} Period {}".format(self.le2mclt.uid, periode))

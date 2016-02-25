@@ -5,7 +5,8 @@ from PyQt4 import QtGui, QtCore
 from util.utili18n import le2mtrans
 from client.cltgui.cltguidialogs import GuiHistorique
 import PublicGoodGameSolidarityParams as pms
-from client.cltgui.cltguiwidgets import WExplication, WCombo, WSpinbox, WPeriod
+from client.cltgui.cltguiwidgets import WExplication, WCombo, WSpinbox, \
+    WPeriod, WRadio
 import PublicGoodGameSolidarityTexts as texts_PGGS
 
 logger = logging.getLogger("le2m")
@@ -105,3 +106,66 @@ class DConfig(QtGui.QDialog):
 
     def get_config(self):
         return self._combo_treat.get_currentindex()
+
+
+class DVote(QtGui.QDialog):
+    def __init__(self, defered, automatique, parent):
+        super(DVote, self).__init__(parent)
+
+        self._defered = defered
+        self._automatique = automatique
+
+        layout = QtGui.QVBoxLayout(self)
+
+        self._explanation = WExplication(
+            parent=self, text=texts_PGGS.get_text_vote(),
+            size=(450, 80))
+        layout.addWidget(self._explanation)
+
+        self._vote = WRadio(
+            parent=self, automatique=self._automatique,
+            label=texts_PGGS.trans_PGGS(u"Your vote"),
+            texts=[v for k, v in sorted(texts_PGGS.VOTES.iteritems())])
+        layout.addWidget(self._vote)
+
+        buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
+        buttons.accepted.connect(self._accept)
+        layout.addWidget(buttons)
+
+        self.setWindowTitle(texts_PGGS.trans_PGGS(u"Vote"))
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
+        if self._automatique:
+            self._timer = QtCore.QTimer()
+            self._timer.timeout.connect(
+                buttons.button(QtGui.QDialogButtonBox.Ok).click)
+            self._timer.start(7000)
+
+    def reject(self):
+        pass
+
+    def _accept(self):
+        try:
+            self._timer.stop()
+        except AttributeError:
+            pass
+
+        try:
+            vote = self._vote.get_checkedbutton()
+        except ValueError:
+            return QtGui.QMessageBox.warning(
+                self, le2mtrans(u"Warning"),
+                texts_PGGS.trans_PGGS(u"You must take a decision"))
+
+        if not self._automatique:
+            if QtGui.QMessageBox.question(
+                self, le2mtrans(u"Confirmation"),
+                le2mtrans(u"Do you confirm your choice"),
+                QtGui.QMessageBox.No | QtGui.QMessageBox.Yes) != \
+                QtGui.QMessageBox.Yes:
+                return
+
+        logger.info(u"Send back {}".format(vote))
+        self.accept()
+        self._defered.callback(vote)

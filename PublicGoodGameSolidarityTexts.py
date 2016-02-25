@@ -37,6 +37,11 @@ def get_text_sinistred(sinistred):
     return txt
 
 
+def get_text_vote():
+    txt = trans_PGGS(u"Text vote")
+    return txt
+
+
 def get_text_explanation():
     txt = u"Explanation text"
     return txt

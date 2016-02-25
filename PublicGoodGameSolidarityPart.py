@@ -149,8 +149,8 @@ class PartiePGGS(Partie):
         logger.debug(u"{} Part Payoff".format(self.joueur))
 
         self.PGGS_gain_ecus = self.currentperiod.PGGS_cumulativepayoff
-        self.PGGS_gain_euros = \
-            float(self.PGGS_gain_ecus) * float(pms.TAUX_CONVERSION)
+        self.PGGS_gain_euros = float("{:.2f}".format(
+            float(self.PGGS_gain_ecus) * float(pms.TAUX_CONVERSION)))
         yield (self.remote.callRemote(
             "set_payoffs", self.PGGS_gain_euros, self.PGGS_gain_ecus))
 

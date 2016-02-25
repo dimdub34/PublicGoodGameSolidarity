@@ -8,7 +8,8 @@ developer
 
 # variables
 TREATMENTS = {0: "baseline", 1: "sol_without", 2: "sol_auto", 3: "sol_vote"}
-VOTES = {0: "pour", 1: "contre"}
+IN_FAVOR = 0
+AGAINST = 1
 
 # parameters
 TREATMENT = 0  # change from the configuration screen

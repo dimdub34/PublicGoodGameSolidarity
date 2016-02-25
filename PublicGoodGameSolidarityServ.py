@@ -5,8 +5,9 @@ import logging
 from collections import OrderedDict
 from twisted.internet import defer
 from util import utiltools
+from util.utili18n import le2mtrans
 import PublicGoodGameSolidarityParams as pms
-from PublicGoodGameSolidarityTexts import _PGGS
+import PublicGoodGameSolidarityTexts as text_PGGS
 from PublicGoodGameSolidarityGui import DConfig
 
 
@@ -20,15 +21,16 @@ class Serveur(object):
         # creation of the menu (will be placed in the "part" menu on the
         # server screen)
         actions = OrderedDict()
-        actions[u"Configurer"] = self._configure
-        actions[u"Afficher les paramètres"] = \
+        actions[le2mtrans(u"Configure")] = self._configure
+        actions[le2mtrans(u"Display parameters")] = \
             lambda _: self._le2mserv.gestionnaire_graphique. \
             display_information2(
-                utiltools.get_module_info(pms), u"Paramètres")
-        actions[u"Démarrer"] = lambda _: self._demarrer()
-        actions[u"Afficher les gains"] = \
+                utiltools.get_module_info(pms), le2mtrans(u"Parameters"))
+        actions[le2mtrans(u"Start")] = lambda _: self._demarrer()
+        actions[le2mtrans(u"Display payoffs")] = \
             lambda _: self._le2mserv.gestionnaire_experience.\
             display_payoffs_onserver("PublicGoodGameSolidarity")
+
         self._le2mserv.gestionnaire_graphique.add_topartmenu(
             u"Public Good Game Solidarity", actions)
 
@@ -42,7 +44,8 @@ class Serveur(object):
             treat = screen.get_config()
             pms.TREATMENT = treat
             self._le2mserv.gestionnaire_graphique.infoserv(
-                _PGGS(u"Treatment: {}".format(pms.get_treatment(pms.TREATMENT))))
+                le2mtrans(u"Treatment") + u": {}".format(
+                    pms.get_treatment(pms.TREATMENT)))
 
 
     @defer.inlineCallbacks
@@ -55,12 +58,12 @@ class Serveur(object):
         if self._le2mserv.gestionnaire_joueurs.nombre_joueurs % \
                 (2 * pms.TAILLE_GROUPES) != 0:
             self._le2mserv.gestionnaire_graphique.display_error(
-                _PGGS(u"It is necessary to have a multiple of {} players").format(
-                    2*pms.TAILLE_GROUPES))
+                le2mtrans(u"The number of players is not compatible with "
+                          u"the groups size"))
             return
 
         confirmation = self._le2mserv.gestionnaire_graphique.\
-            question(_PGGS(u"Start PublicGoodGameSolidarity?"))
+            question(le2mtrans(u"Start") + u" PublicGoodGameSolidarity?")
         if not confirmation:
             return
 
@@ -75,15 +78,9 @@ class Serveur(object):
             u"Configure", self._tous, "configure"))
         
         # form groups
-        if pms.TAILLE_GROUPES > 0:
-            try:
-                self._le2mserv.gestionnaire_groupes.former_groupes(
-                    self._le2mserv.gestionnaire_joueurs.get_players(),
-                    pms.TAILLE_GROUPES, forcer_nouveaux=False)
-            except ValueError as e:
-                self._le2mserv.gestionnaire_graphique.display_error(
-                    e.message)
-                return
+        self._le2mserv.gestionnaire_groupes.former_groupes(
+            self._le2mserv.gestionnaire_joueurs.get_players(),
+            pms.TAILLE_GROUPES, forcer_nouveaux=False)
 
         # Sinistre =============================================================
         if pms.TREATMENT == pms.get_treatment("sol_without") or \
@@ -110,14 +107,14 @@ class Serveur(object):
                          sinistred_yes[i])]
 
             self._le2mserv.gestionnaire_graphique.infoserv(
-                _PGGS(u"Not sinistred: {}").format(
+                text_PGGS.trans_PGGS(u"Not sinistred") + u": {}").format(
                     [u"G{}".format(g.split("_")[2]) for g in
-                     self._sinistred.viewkeys()]))
+                     self._sinistred.viewkeys()])
 
             self._le2mserv.gestionnaire_graphique.infoserv(
-                _PGGS(u"Sinistred: {}").format(
+                text_PGGS.trans_PGGS(u"Sinistred") + u": {}").format(
                     [u"G{}".format(v["paired"].split("_")[2]) for v in
-                     self._sinistred.viewvalues()]))
+                     self._sinistred.viewvalues()])
 
             for v in self._sinistred.viewvalues():
                 for j in v["comp"]:
@@ -126,7 +123,7 @@ class Serveur(object):
                     j.sinistred = True
 
             yield (self._le2mserv.gestionnaire_experience.run_step(
-                _PGGS(u"Information sinistre"), self._tous,
+                text_PGGS.trans_PGGS(u"Information sinistre"), self._tous,
                 "display_infosinistre"))
 
             # vote =============================================================
@@ -136,7 +133,7 @@ class Serveur(object):
                     vote_players.extend(v["comp"])
 
                 yield (self._le2mserv.gestionnaire_experience.run_step(
-                    _PGGS(u"Vote"), vote_players, "display_vote"))
+                    text_PGGS.trans_PGGS(u"Vote"), vote_players, "display_vote"))
 
                 for k, v in self._sinistred.viewitems():
                     votes_for = pms.TAILLE_GROUPES - \
@@ -164,9 +161,10 @@ class Serveur(object):
 
             # init period ------------------------------------------------------
             self._le2mserv.gestionnaire_graphique.infoserv(
-                [None, _PGGS(u"Period {}").format(period)])
+                [None, le2mtrans(u"Period") + u" {}".format(period)])
             self._le2mserv.gestionnaire_graphique.infoclt(
-                [None, _PGGS(u"Period {}").format(period)], fg="white", bg="gray")
+                [None, le2mtrans(u"Period") + u" {}".format(period)],
+                fg="white", bg="gray")
             yield (self._le2mserv.gestionnaire_experience.run_func(
                 self._tous, "newperiod", period))
 
@@ -174,7 +172,7 @@ class Serveur(object):
             # the decision screen is displayed on every screen, even when the
             # player cannot contribute
             yield(self._le2mserv.gestionnaire_experience.run_step(
-                _PGGS(u"Decision"), self._tous, "display_decision"))
+                le2mtrans(u"Decision"), self._tous, "display_decision"))
 
             for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
                     "PublicGoodGameSolidarity").viewitems():
@@ -186,7 +184,7 @@ class Serveur(object):
 
             if pms.TREATMENT == pms.get_treatment("sol_auto"):
                 self._le2mserv.gestionnaire_graphique.infoserv(
-                    _PGGS(u"Solidarity"))
+                    text_PGGS.trans_PGGS(u"Solidarity"))
                 for v in self._sinistred.viewvalues():
                     gcontrib = v["comp"][0].currentperiod.PGGS_groupaccountsum
                     for j in v["paired_comp"]:
@@ -196,7 +194,7 @@ class Serveur(object):
 
             elif pms.TREATMENT == pms.get_treatment("sol_vote"):
                 self._le2mserv.gestionnaire_graphique.infoserv(
-                    _PGGS(u"Solidarity"))
+                    text_PGGS.trans_PGGS(u"Solidarity"))
                 for v in self._sinistred.viewvalues():
                     if v["comp"][0].votemajority == pms.get_vote("pour"):
                         for j in v["paired_comp"]:
@@ -214,7 +212,7 @@ class Serveur(object):
             # summary ----------------------------------------------------------
             # also displayed on every screen
             yield(self._le2mserv.gestionnaire_experience.run_step(
-                _PGGS(u"Summary"), self._tous, "display_summary"))
+                le2mtrans(u"Summary"), self._tous, "display_summary"))
         
         # End of part ==========================================================
         yield (self._le2mserv.gestionnaire_experience.finalize_part(

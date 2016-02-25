@@ -25,34 +25,15 @@ class PartiePGGS(Partie):
     repetitions = relationship('RepetitionsPGGS')
 
     def __init__(self, le2mserv, joueur):
-        super(PartiePGGS, self).__init__("PublicGoodGameSolidarity", "PGGS")
-        self._le2mserv = le2mserv
-        self.joueur = joueur
-        self._texte_recapitulatif = u""
-        self._texte_final = u""
+        super(PartiePGGS, self).__init__(
+            nom="PublicGoodGameSolidarity", nom_court="PGGS",
+            joueur=joueur, le2mserv=le2mserv)
         self.PGGS_gain_ecus = 0
         self.PGGS_gain_euros = 0
-        self._histo_build = OrderedDict()
-        self._histo_build[le2mtrans(u"Period")] = "PGGS_period"
-        self._histo_build[_PGGS(u"Individual\naccount")] = "PGGS_indivaccount"
-        self._histo_build[_PGGS(u"Group\naccount")] = "PGGS_groupaccount"
-        self._histo_build[_PGGS(u"Payoff from\nindividual\naccount")] = \
-            "PGGS_indivaccountpayoff"
-        self._histo_build[_PGGS(u"Payoff from\ngroup\naccount")] = \
-        "PGGS_groupaccountpayoff"
-        self._histo_build[le2mtrans(u"Period\npayoff")] = "PGGS_periodpayoff"
-        self._histo_build[le2mtrans(u"Cumulative\npayoff")] = "PGGS_cumulativepayoff"
-        self._histo_content = [list(self._histo_build.viewkeys())]
-        self.periods = {}
-        self._currentperiod = None
         self._sinistred = False
         self._vote = None
         self._votesfor = None
         self._votemajority = None
-
-    @property
-    def currentperiod(self):
-        return self._currentperiod
 
     @property
     def sinistred(self):
@@ -82,15 +63,7 @@ class PartiePGGS(Partie):
 
     @defer.inlineCallbacks
     def newperiod(self, period):
-        """
-        Create a new period and inform the remote
-        If this is the first period then empty the historic
-        :param periode:
-        :return:
-        """
         logger.debug(u"{} New Period".format(self.joueur))
-        if period == 1:
-            del self._histo_content[1:]
         self._currentperiod = RepetitionsPGGS(period)
         self.currentperiod.PGGS_group = self.joueur.groupe
         self.currentperiod.PGGS_sinistred = self.sinistred
@@ -122,11 +95,6 @@ class PartiePGGS(Partie):
 
     @defer.inlineCallbacks
     def display_decision(self):
-        """
-        Display the decision screen on the remote
-        Get back the decision
-        :return:
-        """
         logger.debug(u"{} Decision".format(self.joueur))
         debut = datetime.now()
         self.currentperiod.PGGS_groupaccount = yield(self.remote.callRemote(
@@ -141,10 +109,6 @@ class PartiePGGS(Partie):
         self.joueur.remove_waitmode()
 
     def compute_periodpayoff(self):
-        """
-        Compute the payoff for the period
-        :return:
-        """
         logger.debug(u"{} Period Payoff".format(self.joueur))
 
         # indiv account
@@ -175,7 +139,7 @@ class PartiePGGS(Partie):
                 previousperiod.PGGS_cumulativepayoff + \
                 self.currentperiod.PGGS_periodpayoff
 
-        # we store the period in the self.periodes dictionnary
+        # we store the period in the self.periods dictionary
         self.periods[self.currentperiod.PGGS_period] = self.currentperiod
 
         logger.debug(u"{} Period Payoff {}".format(
@@ -183,39 +147,21 @@ class PartiePGGS(Partie):
 
     @defer.inlineCallbacks
     def display_summary(self):
-        """
-        Create the summary (txt and historic) and then display it on the
-        remote
-        :param args:
-        :return:
-        """
         logger.debug(u"{} Summary".format(self.joueur))
-        self._texte_recapitulatif = texts.get_recapitulatif(self.currentperiod)
-        self._histo_content.append(
-            [getattr(self.currentperiod, e) for e
-             in self._histo_build.viewvalues()])
-        yield(self.remote.callRemote(
-            "display_summary", self._texte_recapitulatif, self._histo_content))
+        yield (self.remote.callRemote(
+            "display_summary", self.currentperiod.todict()))
         self.joueur.info("Ok")
         self.joueur.remove_waitmode()
     
     def compute_partpayoff(self):
-        """
-        Compute the payoff of the part
-        :return:
-        """
         logger.debug(u"{} Part Payoff".format(self.joueur))
-        # gain partie
+
         self.PGGS_gain_ecus = self.currentperiod.PGGS_cumulativepayoff
         self.PGGS_gain_euros = \
             float(self.PGGS_gain_ecus) * float(pms.TAUX_CONVERSION)
+        yield (self.remote.callRemote(
+            "display_payoffs", self.PGGS_gain_euros, self.PGGS_gain_ecus))
 
-        # texte final
-        self._texte_final = texts.get_texte_final(
-            self.PGGS_gain_ecus,
-            self.PGGS_gain_euros)
-
-        logger.debug(u"{} Final text {}".format(self.joueur, self._texte_final))
         logger.info(u'{} Payoff ecus {} Payoff euros {:.2f}'.format(
             self.joueur, self.PGGS_gain_ecus, self.PGGS_gain_euros))
 
@@ -250,8 +196,9 @@ class RepetitionsPGGS(Base):
         self.PGGS_periodpayoff = 0
         self.PGGS_cumulativepayoff = 0
 
-    def todict(self, joueur):
+    def todict(self, joueur=None):
         temp = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        temp["joueur"] = joueur
+        if joueur:
+            temp["joueur"] = joueur
         return temp
 

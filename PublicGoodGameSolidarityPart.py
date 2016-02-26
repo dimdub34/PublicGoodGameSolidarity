@@ -63,7 +63,7 @@ class PartiePGGS(Partie):
         self._currentperiod = RepetitionsPGGS(period)
         self.currentperiod.PGGS_group = self.joueur.groupe
         self.currentperiod.PGGS_sinistred = self.sinistred
-        self.currentperiod.PGGS_vote = self._vote
+        self.currentperiod.PGGS_vote = self.vote
         self.currentperiod.PGGS_voteforgroup = self._votesfor
         self.currentperiod.PGGS_votemajority = self._votemajority
         self._le2mserv.gestionnaire_base.ajouter(self.currentperiod)

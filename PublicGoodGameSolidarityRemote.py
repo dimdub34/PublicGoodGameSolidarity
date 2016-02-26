@@ -6,7 +6,7 @@ from twisted.internet import defer
 from client.cltremote import IRemote
 from client.cltgui.cltguidialogs import GuiRecapitulatif
 import PublicGoodGameSolidarityParams as pms
-from PublicGoodGameSolidarityGui import GuiDecision
+from PublicGoodGameSolidarityGui import GuiDecision, DVote
 import PublicGoodGameSolidarityTexts as texts_PGGS
 
 
@@ -37,7 +37,17 @@ class RemotePGGS(IRemote):
 
     def remote_display_vote(self):
         logger.info(u"{} display_vote".format(self.le2mclt.uid))
-
+        if self.le2mclt.simulation:
+            dec = random.randint(0, 1)
+            logger.info(u"Send back {}".format(dec))
+            return dec
+        else:
+            defered = defer.Deferred()
+            screen = DVote(
+                parent=self.le2mclt.screen, defered=defered,
+                automatique=self.le2mclt.automatique)
+            screen.show()
+            return defered
 
     def remote_newperiod(self, periode):
         logger.info(u"{} Period {}".format(self.le2mclt.uid, periode))

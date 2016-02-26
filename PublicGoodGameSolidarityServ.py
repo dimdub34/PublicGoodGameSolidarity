@@ -136,7 +136,7 @@ class Serveur(object):
 
                 for k, v in self._sinistred.viewitems():
                     votes_for = pms.TAILLE_GROUPES - \
-                                sum([j.currentperiod.vote for j in v["comp"]])
+                                sum([j.vote for j in v["comp"]])
                     vote_majority = pms.IN_FAVOR if \
                         votes_for > pms.TAILLE_GROUPES / 2 else \
                         pms.AGAINST

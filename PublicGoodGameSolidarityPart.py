@@ -9,6 +9,7 @@ from server.servbase import Base
 from server.servparties import Partie
 from util.utiltools import get_module_attributes
 import PublicGoodGameSolidarityParams as pms
+import PublicGoodGameSolidarityTexts as texts_PGGS
 
 
 logger = logging.getLogger("le2m")
@@ -26,10 +27,12 @@ class PartiePGGS(Partie):
             joueur=joueur, le2mserv=le2mserv)
         self.PGGS_gain_ecus = 0
         self.PGGS_gain_euros = 0
+        self._currentsequence = 0
         self._sinistred = False
         self._vote = None
         self._votesfor = None
         self._votemajority = None
+        self._sequences = {}
 
     @property
     def sinistred(self):
@@ -51,10 +54,16 @@ class PartiePGGS(Partie):
     def sinistred(self, true_or_false):
         self._sinistred = true_or_false
 
+    @property
+    def sequences(self):
+        return self._sequences
+
     @defer.inlineCallbacks
-    def configure(self):
+    def configure(self, currentsequence):
         logger.debug(u"{} Configure".format(self.joueur))
-        yield (self.remote.callRemote("configure", get_module_attributes(pms)))
+        self._currentsequence = currentsequence
+        yield (self.remote.callRemote("configure", get_module_attributes(pms),
+                                      self._currentsequence))
         self.joueur.info(u"Ok")
 
     @defer.inlineCallbacks
@@ -82,7 +91,7 @@ class PartiePGGS(Partie):
     def display_vote(self):
         logger.debug(u"{} vote".format(self.joueur))
         self._vote = yield (self.remote.callRemote("display_vote"))
-        self.joueur.info(pms.get_treatment(self._vote))
+        self.joueur.info(texts_PGGS.VOTES.get(self.vote))
 
     @defer.inlineCallbacks
     def display_decision(self):
@@ -154,9 +163,20 @@ class PartiePGGS(Partie):
         yield (self.remote.callRemote(
             "set_payoffs", self.PGGS_gain_euros, self.PGGS_gain_ecus))
 
+        self.sequences[self._currentsequence] = {
+            "gain_euros": self.PGGS_gain_euros,
+            "gain_ecus": self.PGGS_gain_ecus
+        }
+
         logger.info(u'{} Payoff ecus {} Payoff euros {:.2f}'.format(
             self.joueur, self.PGGS_gain_ecus, self.PGGS_gain_euros))
 
+    @defer.inlineCallbacks
+    def display_payoffs(self, sequence):
+        logger.debug(u"{} display_payoffs".format(self.joueur))
+        yield (self.remote.callRemote("display_payoffs_PGGS", sequence))
+        self.joueur.info(u"Ok")
+        self.joueur.remove_waitmode()
 
 class RepetitionsPGGS(Base):
     __tablename__ = 'partie_PublicGoodGameSolidarity_repetitions'

@@ -5,6 +5,7 @@ import random
 from twisted.internet import defer
 from client.cltremote import IRemote
 from client.cltgui.cltguidialogs import GuiRecapitulatif
+from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
 from PublicGoodGameSolidarityGui import GuiDecision, DVote
 import PublicGoodGameSolidarityTexts as texts_PGGS
@@ -22,10 +23,13 @@ class RemotePGGS(IRemote):
             "PGGS_periodpayoff", "PGGS_cumulativepayoff"
         ]
         self.histo.append(texts_PGGS.get_histo_header())
+        self._currentsequence = 0
         self._sinistred = False
+        self._payoffs = {}
 
-    def remote_configure(self, params):
+    def remote_configure(self, params, currentsequence):
         logger.info(u"{} configure".format(self.le2mclt.uid))
+        self._currentsequence = currentsequence
         for k, v in params.iteritems():
             setattr(pms, k, v)
 
@@ -87,3 +91,17 @@ class RemotePGGS(IRemote):
                 texts_PGGS.get_text_summary(period_content))
             ecran_recap.show()
             return defered
+
+    def remote_set_payoffs(self, in_euros, in_ecus=None):
+        logger.info(u"{} set_payoffs".format(self.le2mclt.uid))
+        self._payoff_euros = in_euros
+        self._payoff_ecus = in_ecus
+        self._payoff_text = get_payoff_text(self.payoff_euros, self.payoff_ecus)
+        self._payoffs[self._currentsequence] = {
+            "euros": self.payoff_euros, "ecus": self.payoff_ecus,
+            "txt": self.payoff_text}
+
+    def remote_display_payoffs_PGGS(self, sequence):
+        logger.info(u"{} display_payoffs".format(self.le2mclt.uid))
+        return self.le2mclt.get_remote("base").remote_display_information(
+            self._payoffs[sequence]["txt"])

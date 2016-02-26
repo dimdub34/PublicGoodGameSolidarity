@@ -8,7 +8,8 @@ from util import utiltools
 from util.utili18n import le2mtrans
 import PublicGoodGameSolidarityParams as pms
 import PublicGoodGameSolidarityTexts as text_PGGS
-from PublicGoodGameSolidarityGui import DConfig
+from PublicGoodGameSolidarityGui import DConfig, DGains
+from PyQt4 import QtGui
 
 
 logger = logging.getLogger("le2m.{}".format(__name__))
@@ -27,12 +28,12 @@ class Serveur(object):
             display_information2(
                 utiltools.get_module_info(pms), le2mtrans(u"Parameters"))
         actions[le2mtrans(u"Start")] = lambda _: self._demarrer()
-        actions[le2mtrans(u"Display payoffs")] = \
-            lambda _: self._le2mserv.gestionnaire_experience.\
-            display_payoffs_onserver("PublicGoodGameSolidarity")
+        actions[le2mtrans(u"Display payoffs")] = self._display_payoffs
 
         self._le2mserv.gestionnaire_graphique.add_topartmenu(
             u"Public Good Game Solidarity", actions)
+
+        self._currentsequence = 0
 
     def _configure(self):
         """
@@ -43,7 +44,7 @@ class Serveur(object):
         if screen.exec_():
             treat = screen.get_config()
             pms.TREATMENT = treat
-            self._le2mserv.gestionnaire_graphique.infoserv(
+            self._le2mserv.gestionnaire_graphique.display_statusbar(
                 le2mtrans(u"Treatment") + u": {}".format(
                     pms.get_treatment(pms.TREATMENT)))
 
@@ -72,9 +73,17 @@ class Serveur(object):
         self._tous = self._le2mserv.gestionnaire_joueurs.get_players(
             'PublicGoodGameSolidarity')
 
+        self._currentsequence += 1
+        self._le2mserv.gestionnaire_graphique.infoserv(
+            text_PGGS.trans_PGGS(u"Sequence") + u" {}".format(
+                self._currentsequence))
+        self._le2mserv.gestionnaire_graphique.infoserv(
+            le2mtrans(u"Treatment") + u": {}".format(
+                pms.get_treatment(pms.TREATMENT)))
+
         # configure part (player and remote)
         yield (self._le2mserv.gestionnaire_experience.run_step(
-            u"Configure", self._tous, "configure"))
+            u"Configure", self._tous, "configure", self._currentsequence))
         
         # form groups
         self._le2mserv.gestionnaire_groupes.former_groupes(
@@ -216,3 +225,18 @@ class Serveur(object):
         # End of part ==========================================================
         yield (self._le2mserv.gestionnaire_experience.finalize_part(
             "PublicGoodGameSolidarity"))
+
+
+    def _display_payoffs(self):
+        if self._currentsequence >= 0:
+            sequence, ok = QtGui.QInputDialog.getInt(
+                self._le2mserv.gestionnaire_graphique.screen,
+                text_PGGS.trans_PGGS(u"Sequence choice"),
+                text_PGGS.trans_PGGS(u"Choose the sequence"),
+                min=1, max=self._currentsequence, step=1, value=1)
+            if ok:
+                self._ecran_gains = DGains(self._le2mserv, sequence)
+                self._ecran_gains.show()
+
+        else:  # no sequence has been run
+            return

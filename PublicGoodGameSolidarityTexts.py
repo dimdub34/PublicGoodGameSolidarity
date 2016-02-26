@@ -62,7 +62,7 @@ def get_text_summary(period_content):
                                    trans_PGGS(u"token"))) + \
         trans_PGGS(u"in the public account.") + u"<br />" + \
         trans_PGGS(u"Your payoff for the period is equal to") + \
-        u"{} + {} = {}.".format(period_content.get("PGGS_indivaccountpayoff"),
+        u" {} + {} = {}.".format(period_content.get("PGGS_indivaccountpayoff"),
                                period_content.get("PGGS_groupaccountpayoff"),
                                get_pluriel(period_content.get("PGGS_periodpayoff"),
                                            pms.MONNAIE))

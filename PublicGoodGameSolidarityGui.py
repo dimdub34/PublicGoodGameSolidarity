@@ -2,8 +2,10 @@
 
 import logging
 from PyQt4 import QtGui, QtCore
+from twisted.internet import defer
 from util.utili18n import le2mtrans
 from client.cltgui.cltguidialogs import GuiHistorique
+from server.servgui.servguidialogs import GuiPayoffs
 import PublicGoodGameSolidarityParams as pms
 from client.cltgui.cltguiwidgets import WExplication, WCombo, WSpinbox, \
     WPeriod, WRadio
@@ -169,3 +171,42 @@ class DVote(QtGui.QDialog):
         logger.info(u"Send back {}".format(vote))
         self.accept()
         self._defered.callback(vote)
+
+
+class DGains(GuiPayoffs):
+    def __init__(self, le2mserver, sequence):
+
+        self._le2mserv = le2mserver
+        self._sequence = sequence
+        self._players = self._le2mserv.gestionnaire_joueurs.get_players(
+            "PublicGoodGameSolidarity")
+        self._gains = {}
+        for j in self._players:
+            self._gains[j.joueur] = j.sequences[sequence]["gain_euros"]
+        gains_txt = [[str(k), u"{:.2f}".format(v)] for k, v in
+                     sorted(self._gains.viewitems())]
+
+        GuiPayoffs.__init__(self, le2mserver, "PublicGoodGameSolidarity",
+                            gains_txt)
+        self.ui.pushButton_afficher.clicked.disconnect()
+        self.ui.pushButton_afficher.clicked.connect(
+            lambda _: self._display_onremotes2())
+
+    @defer.inlineCallbacks
+    def _display_onremotes2(self):
+        if not self._le2mserv.gestionnaire_graphique.question(
+                texts_PGGS.trans_PGGS(u"Display payoff on remotes' screen?")):
+            return
+        self._le2mserv.gestionnaire_graphique.set_waitmode(self._players)
+        yield (self._le2mserv.gestionnaire_experience.run_func(
+            self._players, "display_payoffs", self._sequence))
+
+    def _addto_finalpayoffs(self):
+        if not self._gains:
+            return
+        for k, v in self._gains.viewitems():
+            k.get_part("base").paiementFinal += float(v)
+        self._le2mserv.gestionnaire_base.enregistrer()
+        self._le2mserv.gestionnaire_graphique.infoserv(
+            texts_PGGS.trans_PGGS(u"TC payoffs added to final payoffs"),
+            fg="red")

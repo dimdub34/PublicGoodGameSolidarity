@@ -32,7 +32,7 @@ class GuiDecision(QtGui.QDialog):
         layout.addWidget(wperiod)
 
         wexplanation = WExplication(
-            text=texts_PGGS.get_text_explanation(), parent=self, size=(450, 80))
+            text=texts_PGGS.get_text_explanation(), parent=self, size=(500, 60))
         layout.addWidget(wexplanation)
 
         max = 0 if sinistred else pms.DECISION_MAX
@@ -204,9 +204,13 @@ class DGains(GuiPayoffs):
     def _addto_finalpayoffs(self):
         if not self._gains:
             return
+        if not self._le2mserv.gestionnaire_graphique.question(
+            texts_PGGS.trans_PGGS(u"Add part's payoffs to final payoffs?"),
+            parent=self):
+                return
         for k, v in self._gains.viewitems():
             k.get_part("base").paiementFinal += float(v)
         self._le2mserv.gestionnaire_base.enregistrer()
         self._le2mserv.gestionnaire_graphique.infoserv(
-            texts_PGGS.trans_PGGS(u"TC payoffs added to final payoffs"),
+            texts_PGGS.trans_PGGS(u"PGSS payoffs added to final payoffs"),
             fg="red")

@@ -70,6 +70,7 @@ class PartiePGGS(Partie):
     def newperiod(self, period):
         logger.debug(u"{} New Period".format(self.joueur))
         self._currentperiod = RepetitionsPGGS(period)
+        self.currentperiod.PGGS_sequence = self._currentsequence
         self.currentperiod.PGGS_group = self.joueur.groupe
         self.currentperiod.PGGS_sinistred = self.sinistred
         self.currentperiod.PGGS_vote = self.vote
@@ -185,6 +186,7 @@ class RepetitionsPGGS(Base):
         Integer,
         ForeignKey("partie_PublicGoodGameSolidarity.partie_id"))
 
+    PGGS_sequence = Column(Integer)
     PGGS_period = Column(Integer)
     PGGS_treatment = Column(Integer)
     PGGS_group = Column(Integer)

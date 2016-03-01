@@ -10,6 +10,7 @@ import PublicGoodGameSolidarityParams as pms
 import PublicGoodGameSolidarityTexts as text_PGGS
 from PublicGoodGameSolidarityGui import DConfig, DGains
 from PyQt4 import QtGui
+import random
 
 
 logger = logging.getLogger("le2m.{}".format(__name__))
@@ -225,6 +226,10 @@ class Serveur(object):
         # End of part ==========================================================
         yield (self._le2mserv.gestionnaire_experience.finalize_part(
             "PublicGoodGameSolidarity"))
+
+        self._le2mserv.gestionnaire_graphique.infoserv(
+            text_PGGS.trans_PGGS(u"Paid sequence") + u": {}".format(
+                random.randint(1, self._currentsequence)))
 
 
     def _display_payoffs(self):

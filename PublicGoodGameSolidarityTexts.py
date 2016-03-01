@@ -24,8 +24,10 @@ def get_histo_header():
     return [
         le2mtrans(u"Period"), trans_PGGS(u"Individual\naccount"),
         trans_PGGS(u"Group\naccount"),
-        trans_PGGS(u"Payoff from\nindividual\naccount"),
-        trans_PGGS(u"Payoff from\ngroup\naccount"), le2mtrans(u"Period\npayoff"),
+        trans_PGGS(u"Total in\nthe group\naccount"),
+        trans_PGGS(u"Payoff\nfrom\nindividual\naccount"),
+        trans_PGGS(u"Payoff\nfrom\ngroup\naccount"),
+        le2mtrans(u"Period\npayoff"),
         le2mtrans(u"Cumulative\npayoff")
     ]
 

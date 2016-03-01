@@ -9,6 +9,7 @@ from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
 from PublicGoodGameSolidarityGui import GuiDecision, DVote
 import PublicGoodGameSolidarityTexts as texts_PGGS
+from PyQt4 import QtGui
 
 
 logger = logging.getLogger("le2m")
@@ -19,8 +20,9 @@ class RemotePGGS(IRemote):
         IRemote.__init__(self, le2mclt)
         self._histo_vars = [
             "PGGS_period", "PGGS_indivaccount", "PGGS_groupaccount",
-            "PGGS_indivaccountpayoff", "PGGS_groupaccountpayoff",
-            "PGGS_periodpayoff", "PGGS_cumulativepayoff"
+            "PGGS_groupaccountsum", "PGGS_indivaccountpayoff",
+            "PGGS_groupaccountpayoff", "PGGS_periodpayoff",
+            "PGGS_cumulativepayoff"
         ]
         self.histo.append(texts_PGGS.get_histo_header())
         self._currentsequence = 0

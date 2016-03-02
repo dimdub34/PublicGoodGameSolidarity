@@ -161,6 +161,11 @@ class Serveur(object):
                         u"G{}: {}".format(k.split("_")[2],
                                           text_PGGS.VOTES.get(vote_majority)))
 
+                # display info vote
+                self._le2mserv.gestionnaire_experience.run_step(
+                    text_PGGS.trans_PGGS(u"Info vote"), "display_infovote",
+                    self._tous)
+
         # Start ================================================================
         for period in xrange(1 if pms.NOMBRE_PERIODES else 0,
                         pms.NOMBRE_PERIODES + 1):

@@ -95,6 +95,11 @@ class PartiePGGS(Partie):
         self.joueur.info(texts_PGGS.VOTES.get(self.vote))
 
     @defer.inlineCallbacks
+    def display_infovote(self):
+        logger.debug(u"{} info vote".format(self.joueur))
+        yield (self.remote.callRemote("display_infovote", self._votemajority))
+
+    @defer.inlineCallbacks
     def display_decision(self):
         logger.debug(u"{} Decision".format(self.joueur))
         debut = datetime.now()

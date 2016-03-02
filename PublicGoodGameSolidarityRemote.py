@@ -55,6 +55,11 @@ class RemotePGGS(IRemote):
             screen.show()
             return defered
 
+    def remote_display_infovote(self, majority_vote):
+        logger.info(u"{} info vote".format(self.le2mclt.uid))
+        return self.le2mclt.get_remote("base").remote_display_information(
+            texts_PGGS.get_text_infovote(majority_vote, self._sinistred))
+
     def remote_newperiod(self, periode):
         logger.info(u"{} Period {}".format(self.le2mclt.uid, periode))
         self.currentperiod = periode

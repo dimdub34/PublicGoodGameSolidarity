@@ -45,6 +45,16 @@ def get_text_vote():
     return txt
 
 
+def get_text_infovote(majority_vote, sinistred):
+    if not sinistred:
+        txt = trans_PGGS(u"Your group has voted") + u" {} ".format(
+            VOTES.get(majority_vote)) + u" the share of its public account."
+    else:
+        txt = trans_PGGS(u"The group has voted")  + u" {} ".format(
+            VOTES.get(majority_vote)) + u" the share of its public account."
+    return txt
+
+
 def get_text_explanation():
     txt = trans_PGGS(u"You must choose how much tokens you put in the public "
                      u"account.")

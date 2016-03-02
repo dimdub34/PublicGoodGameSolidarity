@@ -97,7 +97,9 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_infovote(self):
         logger.debug(u"{} info vote".format(self.joueur))
-        yield (self.remote.callRemote("display_infovote", self._votemajority))
+        yield (self.remote.callRemote("display_infovote", self.votemajority))
+        self.joueur.info(u"Ok")
+        self.joueur.remove_waitmode()
 
     @defer.inlineCallbacks
     def display_decision(self):

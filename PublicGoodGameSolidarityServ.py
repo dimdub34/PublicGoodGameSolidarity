@@ -162,9 +162,9 @@ class Serveur(object):
                                           text_PGGS.VOTES.get(vote_majority)))
 
                 # display info vote
-                self._le2mserv.gestionnaire_experience.run_step(
-                    text_PGGS.trans_PGGS(u"Info vote"), "display_infovote",
-                    self._tous)
+                yield (self._le2mserv.gestionnaire_experience.run_step(
+                    text_PGGS.trans_PGGS(u"Info vote"), self._tous,
+                    "display_infovote"))
 
         # Start ================================================================
         for period in xrange(1 if pms.NOMBRE_PERIODES else 0,
@@ -216,7 +216,14 @@ class Serveur(object):
                                 v["comp"][0].currentperiod.PGGS_groupaccountsum
                         self._le2mserv.gestionnaire_graphique.infoserv(
                             u"G{}: {}".format(
-                                v["paired"].split("_2")[2],
+                                v["paired"].split("_")[2],
+                                v["paired_comp"][0].currentperiod.PGGS_groupaccount))
+                    else:
+                        for j in v["paired_comp"]:
+                            j.currentperiod.PGGS_groupaccountsum = 0
+                        self._le2mserv.gestionnaire_graphique.infoserv(
+                            u"G{}: {}".format(
+                                v["paired"].split("_")[2],
                                 v["paired_comp"][0].currentperiod.PGGS_groupaccount))
 
             # period payoffs ---------------------------------------------------

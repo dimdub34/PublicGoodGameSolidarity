@@ -95,7 +95,8 @@ class RemotePGGS(IRemote):
             ecran_recap = GuiRecapitulatif(
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
                 self.currentperiod, self.histo,
-                texts_PGGS.get_text_summary(period_content))
+                texts_PGGS.get_text_summary(period_content),
+                size_histo=(650, 100))
             ecran_recap.show()
             return defered
 

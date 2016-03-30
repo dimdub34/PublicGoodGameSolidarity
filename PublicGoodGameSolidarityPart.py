@@ -123,19 +123,28 @@ class PartiePGGS(Partie):
         self.currentperiod.PGGS_indivaccountpayoff = \
             self.currentperiod.PGGS_indivaccount * 1
 
-        # group account
         mpcr = pms.MPCR_NORM
         if pms.TREATMENT == pms.get_treatment("sol_auto") or \
                 (pms.TREATMENT == pms.get_treatment("sol_vote") and
                  self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
             mpcr = pms.MPCR_SOL
-        self.currentperiod.PGGS_groupaccountpayoff = \
-            self.currentperiod.PGGS_groupaccountsum * mpcr
-
-        # period payoff
-        self.currentperiod.PGGS_periodpayoff = \
-            self.currentperiod.PGGS_indivaccountpayoff + \
-            self.currentperiod.PGGS_groupaccountpayoff
+            if self.currentperiod.PGGS_sinistred:
+                self.currentperiod.PGGS_groupaccountsharedpayoff = \
+                    self.currentperiod.PGGS_groupaccountshared * mpcr
+                self.currentperiod.PGGS_periodpayoff = \
+                    self.currentperiod.PGGS_groupaccountsharedpayoff
+            else:
+                self.currentperiod.PGGS_groupaccountpayoff = \
+                    self.currentperiod.PGGS_groupaccountsum * mpcr
+                self.currentperiod.PGGS_periodpayoff = \
+                    self.currentperiod.PGGS_indivaccountpayoff + \
+                    self.currentperiod.PGGS_groupaccountpayoff
+        else:
+            self.currentperiod.PGGS_groupaccountpayoff = \
+                self.currentperiod.PGGS_groupaccountsum * mpcr
+            self.currentperiod.PGGS_periodpayoff = \
+                self.currentperiod.PGGS_indivaccountpayoff + \
+                self.currentperiod.PGGS_groupaccountpayoff
 
         # cumulative payoff since the first period
         if self.currentperiod.PGGS_period < 2:
@@ -204,9 +213,11 @@ class RepetitionsPGGS(Base):
     PGGS_indivaccount = Column(Integer)
     PGGS_groupaccount = Column(Integer)
     PGGS_groupaccountsum = Column(Integer)
+    PGGS_groupaccountshared = Column(Integer)  # total group account of non-sinistred paired group
     PGGS_decisiontime = Column(Integer)
     PGGS_indivaccountpayoff= Column(Integer)
     PGGS_groupaccountpayoff = Column(Float)
+    PGGS_groupaccountsharedpayoff = Column(Float)
     PGGS_periodpayoff = Column(Float)
     PGGS_cumulativepayoff = Column(Float)
 
@@ -214,6 +225,9 @@ class RepetitionsPGGS(Base):
         self.PGGS_treatment = pms.TREATMENT
         self.PGGS_period = period
         self.PGGS_decisiontime = 0
+        self.PGGS_indivaccountpayoff = 0
+        self.PGGS_groupaccountpayoff = 0
+        self.PGGS_groupaccountsharedpayoff = 0
         self.PGGS_periodpayoff = 0
         self.PGGS_cumulativepayoff = 0
 

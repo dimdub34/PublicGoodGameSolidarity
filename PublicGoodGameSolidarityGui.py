@@ -22,7 +22,8 @@ class GuiDecision(QtGui.QDialog):
         # variables
         self._defered = defered
         self._automatique = automatique
-        self._historique = GuiHistorique(self, historique, size=(650, 500))
+        self._historique = GuiHistorique(self, historique, size=(700, 500))
+        self._sinistred = sinistred
 
         layout = QtGui.QVBoxLayout(self)
 
@@ -35,7 +36,7 @@ class GuiDecision(QtGui.QDialog):
             text=texts_PGGS.get_text_explanation(), parent=self, size=(500, 60))
         layout.addWidget(wexplanation)
 
-        max = 0 if sinistred else pms.DECISION_MAX
+        max = 0 if self._sinistred else pms.DECISION_MAX
         self._wcontrib = WSpinbox(
             minimum=0, maximum=max, automatique=self._automatique, parent=self,
             label=texts_PGGS.trans_PGGS(u"How much do you invest in "
@@ -72,12 +73,13 @@ class GuiDecision(QtGui.QDialog):
                 self, le2mtrans(u"Warning"), e.message)
 
         if not self._automatique:
-            if not QtGui.QMessageBox.question(
-                self, le2mtrans(u"Confirmation"),
-                le2mtrans(u"Do you confirm your choice?"),
-                QtGui.QMessageBox.No | QtGui.QMessageBox.Yes) == \
-                    QtGui.QMessageBox.Yes:
-                return
+            if not self._sinistred:
+                if not QtGui.QMessageBox.question(
+                    self, le2mtrans(u"Confirmation"),
+                    le2mtrans(u"Do you confirm your choice?"),
+                    QtGui.QMessageBox.No | QtGui.QMessageBox.Yes) == \
+                        QtGui.QMessageBox.Yes:
+                    return
 
         logger.info(u"Send back {}".format(decision))
         self.accept()

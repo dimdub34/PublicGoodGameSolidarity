@@ -18,15 +18,10 @@ logger = logging.getLogger("le2m")
 class RemotePGGS(IRemote):
     def __init__(self, le2mclt):
         IRemote.__init__(self, le2mclt)
-        self._histo_vars = [
-            "PGGS_period", "PGGS_indivaccount", "PGGS_groupaccount",
-            "PGGS_groupaccountsum", "PGGS_indivaccountpayoff",
-            "PGGS_groupaccountpayoff", "PGGS_periodpayoff",
-            "PGGS_cumulativepayoff"
-        ]
-        self.histo.append(texts_PGGS.get_histo_header())
+        self._histo_vars = []
         self._currentsequence = 0
         self._sinistred = False
+        self._majorityvote = pms.AGAINST
         self._payoffs = {}
 
     def remote_configure(self, params, currentsequence):
@@ -57,6 +52,7 @@ class RemotePGGS(IRemote):
 
     def remote_display_infovote(self, majority_vote):
         logger.info(u"{} info vote".format(self.le2mclt.uid))
+        self._majorityvote = majority_vote
         return self.le2mclt.get_remote("base").remote_display_information(
             texts_PGGS.get_text_infovote(majority_vote, self._sinistred))
 
@@ -64,7 +60,10 @@ class RemotePGGS(IRemote):
         logger.info(u"{} Period {}".format(self.le2mclt.uid, periode))
         self.currentperiod = periode
         if self.currentperiod == 1:
-            del self.histo[1:]
+            del self.histo[:]
+            self._create_histo_vars()
+            self.histo.append(texts_PGGS.get_histo_header(
+                pms.TREATMENT, self._sinistred, self._majorityvote))
 
     def remote_display_decision(self):
         logger.info(u"{} Decision".format(self.le2mclt.uid))
@@ -96,7 +95,7 @@ class RemotePGGS(IRemote):
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
                 self.currentperiod, self.histo,
                 texts_PGGS.get_text_summary(period_content),
-                size_histo=(650, 100))
+                size_histo=(700, 100))
             ecran_recap.show()
             return defered
 
@@ -113,3 +112,22 @@ class RemotePGGS(IRemote):
         logger.info(u"{} display_payoffs".format(self.le2mclt.uid))
         return self.le2mclt.get_remote("base").remote_display_information(
             self._payoffs[sequence]["txt"])
+
+    def _create_histo_vars(self):
+        self._histo_vars = ["PGGS_period", "PGGS_indivaccount",
+                            "PGGS_groupaccount", "PGGS_groupaccountsum"]
+
+        if (pms.TREATMENT == pms.get_treatment("sol_auto") and self._sinistred) \
+            or (pms.TREATMENT == pms.get_treatment("sol_vote") and self._sinistred
+                and self._majorityvote == pms.IN_FAVOR):
+            self._histo_vars.append("PGGS_groupaccountshared")
+
+        self._histo_vars.extend(["PGGS_indivaccountpayoff",
+
+                                 "PGGS_groupaccountpayoff"])
+        if (pms.TREATMENT == pms.get_treatment("sol_auto") and self._sinistred) \
+            or (pms.TREATMENT == pms.get_treatment("sol_vote") and self._sinistred
+                and self._majorityvote == pms.IN_FAVOR):
+            self._histo_vars.append("PGGS_groupaccountsharedpayoff")
+
+        self._histo_vars.extend(["PGGS_periodpayoff", "PGGS_cumulativepayoff"])

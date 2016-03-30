@@ -202,7 +202,7 @@ class Serveur(object):
                 for v in self._sinistred.viewvalues():
                     gcontrib = v["comp"][0].currentperiod.PGGS_groupaccountsum
                     for j in v["paired_comp"]:
-                        j.currentperiod.PGGS_groupaccountsum = gcontrib
+                        j.currentperiod.PGGS_groupaccountshared = gcontrib
                     self._le2mserv.gestionnaire_graphique.infoserv(
                         u"G{}: {}".format(v["paired"].split("_")[2], gcontrib))
 
@@ -212,19 +212,21 @@ class Serveur(object):
                 for v in self._sinistred.viewvalues():
                     if v["comp"][0].votemajority == pms.IN_FAVOR:
                         for j in v["paired_comp"]:
-                            j.currentperiod.PGGS_groupaccountsum = \
+                            j.currentperiod.PGGS_groupaccountshared = \
                                 v["comp"][0].currentperiod.PGGS_groupaccountsum
                         self._le2mserv.gestionnaire_graphique.infoserv(
                             u"G{}: {}".format(
                                 v["paired"].split("_")[2],
-                                v["paired_comp"][0].currentperiod.PGGS_groupaccount))
+                                v["paired_comp"][0].currentperiod.
+                                    PGGS_groupaccountshared))
                     else:
                         for j in v["paired_comp"]:
                             j.currentperiod.PGGS_groupaccountsum = 0
                         self._le2mserv.gestionnaire_graphique.infoserv(
                             u"G{}: {}".format(
                                 v["paired"].split("_")[2],
-                                v["paired_comp"][0].currentperiod.PGGS_groupaccount))
+                                v["paired_comp"][0].currentperiod.
+                                    PGGS_groupaccountshared))
 
             # period payoffs ---------------------------------------------------
             self._le2mserv.gestionnaire_experience.compute_periodpayoffs(

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PGGS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-02 17:51+0100\n"
-"PO-Revision-Date: 2016-03-02 17:57+0100\n"
+"PO-Revision-Date: 2016-03-30 09:00+0100\n"
 "Last-Translator: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language-Team: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language: fr_FR\n"
@@ -19,17 +19,15 @@ msgstr ""
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:79
 msgid "Sequence"
-msgstr ""
+msgstr "Séquence"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:119
-#, fuzzy
 msgid "Not sinistred"
-msgstr "pas sinistré"
+msgstr "Non sinistré"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:124
-#, fuzzy
 msgid "Sinistred"
-msgstr "sinistré"
+msgstr "Sinistré"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:135
 msgid "Information sinistre"
@@ -42,7 +40,7 @@ msgstr "Vote"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:166
 msgid "Info vote"
-msgstr ""
+msgstr "Info vote"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:201
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:211
@@ -51,36 +49,39 @@ msgstr "Solidarité"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:243
 msgid "Paid sequence"
-msgstr ""
+msgstr "Séquence payée"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:251
-#, fuzzy
 msgid "Sequence choice"
-msgstr "Choix du traitement"
+msgstr "Choix de la séquence"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:252
 msgid "Choose the sequence"
-msgstr ""
+msgstr "Choisir une séquence"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:18
 msgid "In favor of"
-msgstr ""
+msgstr "Pour"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:19
 msgid "Against"
-msgstr ""
+msgstr "Contre"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:25
 msgid ""
 "Individual\n"
 "account"
 msgstr ""
+"Compte\n"
+"individuel"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:26
 msgid ""
 "Group\n"
 "account"
 msgstr ""
+"Compte\n"
+"collectif"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:27
 msgid ""
@@ -88,6 +89,9 @@ msgid ""
 "the group\n"
 "account"
 msgstr ""
+"Total dans\n"
+"le compte\n"
+"collectif"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:28
 msgid ""
@@ -96,6 +100,9 @@ msgid ""
 "individual\n"
 "account"
 msgstr ""
+"Gain du\n"
+"compte\n"
+"individuel"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:29
 msgid ""
@@ -104,74 +111,74 @@ msgid ""
 "group\n"
 "account"
 msgstr ""
+"Gain du\n"
+"compte\n"
+"collectif"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:36
-#, fuzzy
 msgid "Your group"
-msgstr "Votre groupe est"
+msgstr "Votre groupe"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:37
-#, fuzzy
 msgid "is sinistred"
-msgstr "sinistré"
+msgstr "est sinistré"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:38
-#, fuzzy
 msgid "is not sinistred"
-msgstr "pas sinistré"
+msgstr "n'est pas sinistré"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:43
 msgid ""
 "You must vote in favour of or againts the share of the public account of "
 "your group with a sinistred group."
 msgstr ""
+"Vous devez voter pour ou contre le partage du compte collectif de votre "
+"groupe avec un groupe sinistré"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:50
-#, fuzzy
 msgid "Your group has voted"
-msgstr "Votre groupe est"
+msgstr "Votre groupe a voté"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:53
 msgid "The group has voted"
-msgstr ""
+msgstr "Votre groupe a voté"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:59
-#, fuzzy
 msgid "You must choose how much tokens you put in the public account."
-msgstr "Combien investissez-vous dans le compte collectif?"
+msgstr ""
+"Vous devez décider combien de jetons vous placez sur le compte collectif."
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:65
 msgid "You put"
-msgstr ""
+msgstr "Vous avez placé"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:67
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:70
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:74
 msgid "token"
-msgstr ""
+msgstr "jeton"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:68
 msgid "in your individual account and "
-msgstr ""
+msgstr "dans votre compte individuel"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:71
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:75
-#, fuzzy
 msgid "in the public account."
-msgstr "Combien investissez-vous dans le compte collectif?"
+msgstr "dans le compte collectif?"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:72
 msgid "Your group put a total of"
-msgstr ""
+msgstr "Vous avez placé un total de"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:76
 msgid "Your payoff for the period is equal to"
-msgstr ""
+msgstr "Votre gain pour la période est de"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:85
 msgid ""
 "Each member of the sinistred groups has a payoff for the period equal to"
-msgstr ""
+msgstr "Chaque membre du groupe sinistré a un gain pour la période égal à"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:41
 msgid "How much do you invest in the public account?"
@@ -183,23 +190,23 @@ msgstr "Choix du traitement"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:129
 msgid "Your vote"
-msgstr ""
+msgstr "Votre vote"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:161
 msgid "You must take a decision"
-msgstr ""
+msgstr "Vous devez prendre une décision"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:198
 msgid "Display payoff on remotes' screen?"
-msgstr ""
+msgstr "Afficher les gains sur les écrans des clients?"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:208
 msgid "Add part's payoffs to final payoffs?"
-msgstr ""
+msgstr "Ajouter les gains de la partie aux gains finaux"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:215
 msgid "PGSS payoffs added to final payoffs"
-msgstr ""
+msgstr "Les gains de PGGS ont été ajoutés aux gains finaux"
 
 #~ msgid "Treatment: {}"
 #~ msgstr "Traitement: {}"

@@ -195,6 +195,18 @@ class PartiePGGS(Partie):
         self.joueur.info(u"Ok")
         self.joueur.remove_waitmode()
 
+    @defer.inlineCallbacks
+    def display_questfinal(self):
+        logger.debug(u"{} display_questfinal".format(self.joueur))
+        inputs = yield (self.remote.callRemote("display_questfinal"))
+        part_questfinal = self.joueur.get_part("questionnaireFinal")
+        for k, v in inputs.viewitems():
+            setattr(part_questfinal, k, v)
+            setattr(self.currentperiod, "PGGS_{}".format(k), v)
+        self.joueur.info('ok')
+        self.joueur.remove_waitmode()
+
+
 class RepetitionsPGGS(Base):
     __tablename__ = 'partie_PublicGoodGameSolidarity_repetitions'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -220,6 +232,8 @@ class RepetitionsPGGS(Base):
     PGGS_groupaccountsharedpayoff = Column(Float)
     PGGS_periodpayoff = Column(Float)
     PGGS_cumulativepayoff = Column(Float)
+    PGGS_politics = Column(Integer)
+    PGGS_risk = Column(Integer)
 
     def __init__(self, period):
         self.PGGS_treatment = pms.TREATMENT

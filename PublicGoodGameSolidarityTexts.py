@@ -20,6 +20,23 @@ VOTES = {
 }
 
 
+POLITICS = {
+    0: u"Extrême gauche",
+    1: u"Gauche",
+    2: u"Centre",
+    3: u"Droite",
+    4: u"Extrême droite"
+}
+
+
+def get_text_risk():
+    text = u"Etes-vous généralement une personne qui " \
+           u"prend des risques ou essayez-vous de les éviter?<br />" \
+           u"Veuillez cocher une case sur l'échelle ci-contre, où 0 signifie " \
+           u"\"peur du risque\" et 10 signifie \"prêt à prendre des risques\"."
+    return text
+
+
 def get_histo_header(treatment, sinistred, vote):
     h = [le2mtrans(u"Period"), trans_PGGS(u"Individual\naccount"),
          trans_PGGS(u"Group\naccount"),

@@ -7,9 +7,8 @@ from client.cltremote import IRemote
 from client.cltgui.cltguidialogs import GuiRecapitulatif
 from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
-from PublicGoodGameSolidarityGui import GuiDecision, DVote
+from PublicGoodGameSolidarityGui import GuiDecision, DVote, DQuestFinalPGGS
 import PublicGoodGameSolidarityTexts as texts_PGGS
-from PyQt4 import QtGui
 
 
 logger = logging.getLogger("le2m")
@@ -131,3 +130,46 @@ class RemotePGGS(IRemote):
             self._histo_vars.append("PGGS_groupaccountsharedpayoff")
 
         self._histo_vars.extend(["PGGS_periodpayoff", "PGGS_cumulativepayoff"])
+
+    def remote_display_questfinal(self):
+        logger.info(u"{} display_questfinal".format(self._le2mclt.uid))
+        if self.le2mclt.simulation:
+            from datetime import datetime
+            inputs = {}
+            today_year = datetime.now().year
+            inputs['naissance'] = today_year - random.randint(16, 60)
+            inputs['genre'] = random.randint(0, 1)
+            inputs['nationalite'] = random.randint(1, 100)
+            inputs['couple'] = random.randint(0, 1)
+            inputs['etudiant'] = random.randint(0, 1)
+            if inputs['etudiant'] == 0:
+                inputs['etudiant_discipline'] = random.randint(1, 10)
+                inputs['etudiant_niveau'] = random.randint(1, 6)
+            inputs['experiences'] = random.randint(0, 1)
+            inputs["fratrie_nombre"] = random.randint(0, 10)
+            if inputs["fratrie_nombre"] > 0:
+                inputs["fratrie_rang"] = random.randint(
+                    1, inputs["fratrie_nombre"] + 1)
+            else:
+                inputs["fratrie_rang"] = 0
+            # sportivité
+            inputs["sportif"] = random.randint(0, 1)
+            if inputs["sportif"] == 0:
+                inputs["sportif_type"] = random.randint(0, 1)
+                inputs["sportif_competition"] = random.randint(0, 1)
+            # religiosité
+            inputs['religion_place'] = random.randint(1, 4)
+            inputs['religion_croyance'] = random.randint(1, 4)
+            inputs['religion_nom'] = random.randint(1, 6)
+            # additional questions
+            inputs["politics"] = random.randint(1, 5)
+            inputs["risk"] = random.randint(0, 10)
+            logger.info(u"Renvoi: {}".format(inputs))
+            return inputs
+
+        else:
+            defered = defer.Deferred()
+            screen = DQuestFinalPGGS(defered, self.le2mclt.automatique,
+                                   self.le2mclt.screen)
+            screen.show()
+            return defered

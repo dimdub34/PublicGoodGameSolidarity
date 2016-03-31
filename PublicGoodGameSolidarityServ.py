@@ -34,6 +34,12 @@ class Serveur(object):
         self._le2mserv.gestionnaire_graphique.add_topartmenu(
             u"Public Good Game Solidarity", actions)
 
+        # final question
+        self._le2mserv.gestionnaire_graphique.screen.action_finalquest.\
+            triggered.disconnect()
+        self._le2mserv.gestionnaire_graphique.screen.action_finalquest.\
+            triggered.connect(lambda _: self._display_questfinal())
+
         self._currentsequence = 0
 
     def _configure(self):
@@ -167,7 +173,7 @@ class Serveur(object):
                     "display_infovote"))
 
         # Start ================================================================
-        for period in xrange(1 if pms.NOMBRE_PERIODES else 0,
+        for period in range(1 if pms.NOMBRE_PERIODES else 0,
                         pms.NOMBRE_PERIODES + 1):
 
             if self._le2mserv.gestionnaire_experience.stop_repetitions:
@@ -245,17 +251,46 @@ class Serveur(object):
             text_PGGS.trans_PGGS(u"Paid sequence") + u": {}".format(
                 random.randint(1, self._currentsequence)))
 
-
     def _display_payoffs(self):
         if self._currentsequence >= 0:
             sequence, ok = QtGui.QInputDialog.getInt(
                 self._le2mserv.gestionnaire_graphique.screen,
                 text_PGGS.trans_PGGS(u"Sequence choice"),
                 text_PGGS.trans_PGGS(u"Choose the sequence"),
-                min=1, max=self._currentsequence, step=1, value=1)
+                int_min=1, int_max=self._currentsequence, int_step=1,
+                int_value=1)
             if ok:
                 self._ecran_gains = DGains(self._le2mserv, sequence)
                 self._ecran_gains.show()
 
         else:  # no sequence has been run
             return
+
+    @defer.inlineCallbacks
+    def _display_questfinal(self):
+        if not self._le2mserv.gestionnaire_base.is_created():
+            QtGui.QMessageBox.warning(
+                self._le2mserv.gestionnaire_graphique.screen,
+                le2mtrans(u"Warning"),
+                le2mtrans(u"There is no database yet. You first need to "
+                          u"load at least one part."))
+            return
+        if not hasattr(self, "_tous"):
+            QtGui.QMessageBox.warning(
+                self._le2mserv.gestionnaire_graphique.screen,
+                le2mtrans(u"Warning"),
+                text_PGGS.trans_PGGS(u"PGGS has to be run before to "
+                         u"start this questionnaire"))
+            return
+
+        confirmation = QtGui.QMessageBox.question(
+            self._le2mserv.gestionnaire_graphique.screen,
+            le2mtrans(u"Confirmation"),
+            le2mtrans(u"Start the final questionnaire?"),
+            QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+        if confirmation != QtGui.QMessageBox.Ok:
+            return
+
+        yield (self._le2mserv.gestionnaire_experience.run_step(
+            text_PGGS.trans_PGGS(u"Final questionnaire"), self._tous,
+            "display_questfinal"))

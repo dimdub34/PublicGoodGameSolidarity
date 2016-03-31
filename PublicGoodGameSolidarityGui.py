@@ -4,7 +4,7 @@ import logging
 from PyQt4 import QtGui, QtCore
 from twisted.internet import defer
 from util.utili18n import le2mtrans
-from client.cltgui.cltguidialogs import GuiHistorique
+from client.cltgui.cltguidialogs import GuiHistorique, DQuestFinal
 from server.servgui.servguidialogs import GuiPayoffs
 import PublicGoodGameSolidarityParams as pms
 from client.cltgui.cltguiwidgets import WExplication, WCombo, WSpinbox, \
@@ -216,3 +216,61 @@ class DGains(GuiPayoffs):
         self._le2mserv.gestionnaire_graphique.infoserv(
             texts_PGGS.trans_PGGS(u"PGSS payoffs added to final payoffs"),
             fg="red")
+
+
+class DQuestFinalPGGS(DQuestFinal):
+    def __init__(self, defered, automatique, parent):
+        DQuestFinal.__init__(self, defered, automatique, parent)
+
+        politics = [v for k, v in sorted(texts_PGGS.POLITICS.viewitems())]
+        politics.insert(0, le2mtrans(u"Choose"))
+        politics.append(le2mtrans(u"Not in the list above"))
+        self._politics = WCombo(
+            parent=self, automatique=self._automatique,
+            label=texts_PGGS.trans_PGGS(
+                u"Politically, you feel yourself in line with"),
+                items=politics)
+        self._gridlayout.addWidget(self._politics, 6, 1)
+
+        self._risk = WRadio(parent=self, automatique=self._automatique,
+                            label=texts_PGGS.get_text_risk(),
+                            texts=map(str, range(11)))
+        self._gridlayout.addWidget(self._risk, 7, 0, 1, 3)
+
+        self.setMinimumSize(0, 0)
+        self.setMaximumSize(16777215, 16777215)
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
+    def _accept(self):
+        try:
+            self._timer_automatique.stop()
+        except AttributeError:
+            pass
+        inputs = self._get_inputs()
+        if type(inputs) is dict:
+
+            try:
+
+                inputs["politics"] = self._politics.get_currentindex()
+                inputs["risk"] = self._risk.get_checkedbutton()
+
+            except ValueError:
+                return QtGui.QMessageBox.warning(
+                    self, le2mtrans(u"Warning"),
+                    le2mtrans(u"You must answer to all the questions"))
+
+            if not self._automatique:
+                confirm = QtGui.QMessageBox.question(
+                    self, le2mtrans(u"Confirmation"),
+                    le2mtrans(u"Do you confirm your answers?"),
+                    QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
+                if confirm != QtGui.QMessageBox.Yes:
+                    return
+
+            logger.info(u"Send back: {}".format(inputs))
+            self.accept()
+            self._defered.callback(inputs)
+
+        else:
+            return

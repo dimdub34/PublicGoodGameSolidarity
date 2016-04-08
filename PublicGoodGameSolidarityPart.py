@@ -234,6 +234,7 @@ class RepetitionsPGGS(Base):
     PGGS_cumulativepayoff = Column(Float)
     PGGS_politics = Column(Integer)
     PGGS_risk = Column(Integer)
+    PGGS_inequality = Column(Integer)
 
     def __init__(self, period):
         self.PGGS_treatment = pms.TREATMENT

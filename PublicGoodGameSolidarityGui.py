@@ -237,6 +237,12 @@ class DQuestFinalPGGS(DQuestFinal):
                             texts=map(str, range(11)))
         self._gridlayout.addWidget(self._risk, 7, 0, 1, 3)
 
+        self._inequality = WRadio(parent=self, automatique=self._automatique,
+                            label=texts_PGGS.get_text_inequality(),
+                            texts=map(str, range(11)))
+
+        self._gridlayout.addWidget(self._inequality, 8, 0, 1, 3)
+
         self.setMinimumSize(0, 0)
         self.setMaximumSize(16777215, 16777215)
         self.adjustSize()
@@ -254,6 +260,7 @@ class DQuestFinalPGGS(DQuestFinal):
 
                 inputs["politics"] = self._politics.get_currentindex()
                 inputs["risk"] = self._risk.get_checkedbutton()
+                inputs["inequality"] = self._inequality.get_checkedbutton()
 
             except ValueError:
                 return QtGui.QMessageBox.warning(

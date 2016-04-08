@@ -164,6 +164,7 @@ class RemotePGGS(IRemote):
             # additional questions
             inputs["politics"] = random.randint(1, 5)
             inputs["risk"] = random.randint(0, 10)
+            inputs["inequality"] = random.randint(0, 10)
             logger.info(u"Renvoi: {}".format(inputs))
             return inputs
 

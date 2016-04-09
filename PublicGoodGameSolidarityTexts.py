@@ -41,6 +41,7 @@ def get_text_inequality():
     text = u"L'Etat devrait prendre des mesures pour réduire les inégalités.<br />" \
            u"Veuillez cocher une case sur l'échelle ci-contre, où 0 signifie " \
            u"\"pas du tout d'accord\" et 10 signifie \"tout à fait d'accord\"."
+    return text
 
 
 def get_histo_header(treatment, sinistred, vote):

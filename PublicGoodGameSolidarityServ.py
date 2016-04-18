@@ -62,7 +62,7 @@ class Serveur(object):
         :return:
         """
         # check conditions =====================================================
-        if not self._le2mserv.gestionnaire_joueurs.nombre_joueurs:
+        if self._le2mserv.gestionnaire_joueurs.nombre_joueurs == 0:
             self._le2mserv.gestionnaire_graphique.display_error(
                 le2mtrans(u"No clients connected!"))
             return

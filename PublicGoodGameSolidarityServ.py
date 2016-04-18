@@ -62,12 +62,20 @@ class Serveur(object):
         :return:
         """
         # check conditions =====================================================
-        if self._le2mserv.gestionnaire_joueurs.nombre_joueurs % \
-                (2 * pms.TAILLE_GROUPES) != 0:
-            self._le2mserv.gestionnaire_graphique.display_error(
-                le2mtrans(u"The number of players is not compatible with "
-                          u"the groups size"))
+        if pms.TREATMENT == pms.get_treatment("baseline"):
+            if self._le2mserv.gestionnaire_joueurs.nombre_joueurs % \
+                    pms.TAILLE_GROUPES != 0:
+                self._le2mserv.gestionnaire_graphique.display_error(
+                    le2mtrans(u"The number of players is not compatible with "
+                              u"the groups size"))
             return
+        else:
+            if self._le2mserv.gestionnaire_joueurs.nombre_joueurs % \
+                    (2 * pms.TAILLE_GROUPES) != 0:
+                self._le2mserv.gestionnaire_graphique.display_error(
+                    le2mtrans(u"The number of players is not compatible with "
+                              u"the groups size"))
+                return
 
         confirmation = self._le2mserv.gestionnaire_graphique.\
             question(le2mtrans(u"Start") + u" PublicGoodGameSolidarity?")

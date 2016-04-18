@@ -265,7 +265,9 @@ class Serveur(object):
 
     def _display_payoffs(self):
         if self._currentsequence >= 0:
-            screen = DSequenceChoice(self._currentsequence)
+            screen = DSequenceChoice(
+                self._currentsequence,
+                self._le2mserv.gestionnaire_graphique.screen)
             if screen.exec_():
                 sequence = screen.get_choice()
                 self._ecran_gains = DGains(self._le2mserv, sequence)

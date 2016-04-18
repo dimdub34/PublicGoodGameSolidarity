@@ -62,6 +62,10 @@ class Serveur(object):
         :return:
         """
         # check conditions =====================================================
+        if not self._le2mserv.gestionnaire_joueurs.nombre_joueurs:
+            self._le2mserv.gestionnaire_graphique.display_error(
+                le2mtrans(u"No clients connected!"))
+            return
         if pms.TREATMENT == pms.get_treatment("baseline"):
             if self._le2mserv.gestionnaire_joueurs.nombre_joueurs % \
                     pms.TAILLE_GROUPES != 0:

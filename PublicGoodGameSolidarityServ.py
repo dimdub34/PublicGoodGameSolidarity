@@ -8,7 +8,7 @@ from util import utiltools
 from util.utili18n import le2mtrans
 import PublicGoodGameSolidarityParams as pms
 import PublicGoodGameSolidarityTexts as text_PGGS
-from PublicGoodGameSolidarityGui import DConfig, DGains
+from PublicGoodGameSolidarityGui import DConfig, DGains, DSequenceChoice
 from PyQt4 import QtGui
 import random
 
@@ -265,16 +265,11 @@ class Serveur(object):
 
     def _display_payoffs(self):
         if self._currentsequence >= 0:
-            sequence, ok = QtGui.QInputDialog.getInt(
-                self._le2mserv.gestionnaire_graphique.screen,
-                text_PGGS.trans_PGGS(u"Sequence choice"),
-                text_PGGS.trans_PGGS(u"Choose the sequence"),
-                int_min=1, int_max=self._currentsequence, int_step=1,
-                int_value=1)
-            if ok:
+            screen = DSequenceChoice(self._currentsequence)
+            if screen.exec_():
+                sequence = screen.get_choice()
                 self._ecran_gains = DGains(self._le2mserv, sequence)
                 self._ecran_gains.show()
-
         else:  # no sequence has been run
             return
 

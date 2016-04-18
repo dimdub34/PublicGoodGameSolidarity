@@ -281,3 +281,26 @@ class DQuestFinalPGGS(DQuestFinal):
 
         else:
             return
+
+
+class DSequenceChoice(QtGui.QDialog):
+    def __init__(self, nb_played_seq, parent):
+        super(DChoixSequence, self).__init__(parent)
+
+        layout = QtGui.QVBoxLayout(self)
+
+        self._choice = WSpinbox(
+            minimum=1, maximum=nb_played_seq, automatique=False, parent=self,
+            label=texts_PGGS.trans_PGGS(u"Choose the sequence to display"))
+        layout.addWidget(self._choice)
+
+        buttons = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Cancel |QtGui.QDialogButtonBox.Ok)
+        layout.addWidget(buttons)
+
+        self.setWindowTitle(le2mtrans(u"Sequence choice"))
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
+    def get_choice(self):
+        return self._choice.get_value()

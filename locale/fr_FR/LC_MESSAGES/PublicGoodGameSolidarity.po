@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PGGS\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-30 22:27+0200\n"
-"PO-Revision-Date: 2016-03-30 22:28+0100\n"
+"PO-Revision-Date: 2016-04-18 07:42+0100\n"
 "Last-Translator: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language-Team: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language: fr_FR\n"
@@ -89,7 +89,7 @@ msgid ""
 "the group\n"
 "account"
 msgstr ""
-"Total dans\n"
+"Total sur\n"
 "le compte\n"
 "collectif"
 
@@ -99,7 +99,7 @@ msgid ""
 "the shared\n"
 "group account"
 msgstr ""
-"Total dans\n"
+"Total sur\n"
 "le compte\n"
 "collectif\n"
 "partagé"
@@ -189,12 +189,12 @@ msgstr "jeton"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:80
 msgid "in your individual account and"
-msgstr "dans votre compte individuel et "
+msgstr "sur votre compte individuel et "
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:83
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:87
 msgid "in the group account."
-msgstr "dans le compte collectif."
+msgstr "sur le compte collectif."
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:84
 msgid "Your group put a total of"
@@ -206,7 +206,7 @@ msgstr "L'autre groupe a placé"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:97
 msgid "in its group account, shared with your group."
-msgstr "dans son compte collectif, partagé avec votre groupe"
+msgstr "sur son compte collectif, partagé avec votre groupe"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:99
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:113
@@ -220,7 +220,7 @@ msgstr "Chaque membre du groupe sinistré a un gain pour la période égal à"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:42
 msgid "How much do you invest in the public account?"
-msgstr "Combien investissez-vous dans le compte collectif?"
+msgstr "Combien de jetons placez-vous sur le compte collectif?"
 
 #: /home/irtimid/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:96
 msgid "Treatment choice"

@@ -26,7 +26,7 @@ class RemotePGGS(IRemote):
     def remote_configure(self, params, currentsequence):
         logger.info(u"{} configure".format(self.le2mclt.uid))
         self._currentsequence = currentsequence
-        for k, v in params.iteritems():
+        for k, v in params.viewitems():
             setattr(pms, k, v)
 
     def remote_display_sinistre(self, sinistred):

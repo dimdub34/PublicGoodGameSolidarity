@@ -259,9 +259,9 @@ class Serveur(object):
         yield (self._le2mserv.gestionnaire_experience.finalize_part(
             "PublicGoodGameSolidarity"))
 
-        self._le2mserv.gestionnaire_graphique.infoserv(
-            text_PGGS.trans_PGGS(u"Paid sequence") + u": {}".format(
-                random.randint(1, self._currentsequence)))
+        # self._le2mserv.gestionnaire_graphique.infoserv(
+        #     text_PGGS.trans_PGGS(u"Paid sequence") + u": {}".format(
+        #         random.randint(1, self._currentsequence)))
 
     def _display_payoffs(self):
         if self._currentsequence >= 0:

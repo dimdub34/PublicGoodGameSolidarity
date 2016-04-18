@@ -285,7 +285,7 @@ class DQuestFinalPGGS(DQuestFinal):
 
 class DSequenceChoice(QtGui.QDialog):
     def __init__(self, nb_played_seq, parent):
-        super(DChoixSequence, self).__init__(parent)
+        super(DSequenceChoice, self).__init__(parent)
 
         layout = QtGui.QVBoxLayout(self)
 
@@ -296,6 +296,8 @@ class DSequenceChoice(QtGui.QDialog):
 
         buttons = QtGui.QDialogButtonBox(
             QtGui.QDialogButtonBox.Cancel |QtGui.QDialogButtonBox.Ok)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
         self.setWindowTitle(le2mtrans(u"Sequence choice"))

@@ -198,7 +198,8 @@ class DGains(GuiPayoffs):
     def _display_onremotes2(self):
         confirmation = QtGui.QMessageBox.question(
             self, u"Confirmation",
-            texts_PGGS.trans_PGGS(u"Display payoff on remotes' screen?"))
+            texts_PGGS.trans_PGGS(u"Display payoff on remotes' screen?"),
+            QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
         if confirmation != QtGui.QMessageBox.Yes:
             return
         self._le2mserv.gestionnaire_graphique.set_waitmode(self._players)

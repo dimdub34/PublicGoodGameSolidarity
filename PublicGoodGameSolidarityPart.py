@@ -125,8 +125,8 @@ class PartiePGGS(Partie):
             self.currentperiod.PGGS_indivaccount * 1
 
         mpcr = pms.MPCR_NORM
-        if pms.TREATMENT == pms.get_treatment("sol_auto") or \
-                (pms.TREATMENT == pms.get_treatment("sol_vote") and
+        if pms.TREATMENT == pms.SOL_AUTO or \
+                (pms.TREATMENT == pms.SOL_VOTE and
                  self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
             mpcr = pms.MPCR_SOL
             if self.currentperiod.PGGS_sinistred:

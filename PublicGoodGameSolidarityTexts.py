@@ -49,16 +49,16 @@ def get_histo_header(treatment, sinistred, vote):
          trans_PGGS(u"Group\naccount"),
          trans_PGGS(u"Total in\nthe group\naccount")]
 
-    if (treatment == pms.get_treatment("sol_auto") and sinistred) or \
-            (treatment == pms.get_treatment("sol_vote") and sinistred and
+    if (treatment == pms.SOL_AUTO and sinistred) or \
+            (treatment == pms.SOL_VOTE and sinistred and
                      vote == pms.IN_FAVOR):
         h.append(trans_PGGS(u"Total in\nthe shared\ngroup account"))
 
     h.extend([trans_PGGS(u"Payoff\nfrom\nindividual\naccount"),
         trans_PGGS(u"Payoff\nfrom\ngroup\naccount")])
 
-    if (treatment == pms.get_treatment("sol_auto") and sinistred) or \
-            (treatment == pms.get_treatment("sol_vote") and sinistred and
+    if (treatment == pms.SOL_AUTO and sinistred) or \
+            (treatment == pms.SOL_VOTE and sinistred and
                      vote == pms.IN_FAVOR):
         h.append(trans_PGGS(u"Payoff\nfrom the\nshared group\naccount"))
 
@@ -110,8 +110,8 @@ def get_text_summary(period_content):
                                    trans_PGGS(u"token"))) + \
         trans_PGGS(u"in the group account.")
 
-    if period_content.get("PGGS_treatment") == pms.get_treatment("sol_auto") \
-            or (period_content.get("PGGS_treatment") == pms.get_treatment("sol_vote")
+    if period_content.get("PGGS_treatment") == pms.SOL_AUTO \
+            or (period_content.get("PGGS_treatment") == pms.SOL_VOTE
                 and period_content.get("PGGS_votemajority") == pms.IN_FAVOR):
         txt += u"<br />"
         if period_content.get("PGGS_sinistred"):

@@ -116,16 +116,16 @@ class RemotePGGS(IRemote):
         self._histo_vars = ["PGGS_period", "PGGS_indivaccount",
                             "PGGS_groupaccount", "PGGS_groupaccountsum"]
 
-        if (pms.TREATMENT == pms.get_treatment("sol_auto") and self._sinistred) \
-            or (pms.TREATMENT == pms.get_treatment("sol_vote") and self._sinistred
+        if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
+            or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
                 and self._majorityvote == pms.IN_FAVOR):
             self._histo_vars.append("PGGS_groupaccountshared")
 
         self._histo_vars.extend(["PGGS_indivaccountpayoff",
 
                                  "PGGS_groupaccountpayoff"])
-        if (pms.TREATMENT == pms.get_treatment("sol_auto") and self._sinistred) \
-            or (pms.TREATMENT == pms.get_treatment("sol_vote") and self._sinistred
+        if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
+            or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
                 and self._majorityvote == pms.IN_FAVOR):
             self._histo_vars.append("PGGS_groupaccountsharedpayoff")
 

@@ -94,9 +94,6 @@ class Serveur(object):
         self._le2mserv.gestionnaire_graphique.infoserv(
             text_PGGS.trans_PGGS(u"Sequence") + u" {}".format(
                 self._currentsequence))
-        self._le2mserv.gestionnaire_graphique.infoserv(
-            le2mtrans(u"Treatment") + u": {}".format(
-                pms.get_treatment(pms.TREATMENT)))
 
         # configure part (player and remote)
         yield (self._le2mserv.gestionnaire_experience.run_step(
@@ -108,9 +105,9 @@ class Serveur(object):
             pms.TAILLE_GROUPES, forcer_nouveaux=False)
 
         # Sinistre =============================================================
-        if pms.TREATMENT == pms.get_treatment("sol_without") or \
-            pms.TREATMENT == pms.get_treatment("sol_auto") or \
-            pms.TREATMENT == pms.get_treatment("sol_vote"):
+        if pms.TREATMENT == pms.SOL_WITHOUT or \
+            pms.TREATMENT == pms.SOL_AUTO or \
+            pms.TREATMENT == pms.SOL_VOTE:
             groups_keys = list(self._le2mserv.gestionnaire_groupes.get_groupes(
                 "PublicGoodGameSolidarity").viewkeys())
 
@@ -152,7 +149,7 @@ class Serveur(object):
                 "display_infosinistre"))
 
             # vote =============================================================
-            if pms.TREATMENT == pms.get_treatment("sol_vote"):
+            if pms.TREATMENT == pms.SOL_VOTE:
                 vote_players = []
                 for v in self._sinistred.viewvalues():
                     vote_players.extend(v["comp"])
@@ -212,7 +209,7 @@ class Serveur(object):
                 for j in m:
                     j.currentperiod.PGGS_groupaccountsum = group_contrib
 
-            if pms.TREATMENT == pms.get_treatment("sol_auto"):
+            if pms.TREATMENT == pms.SOL_AUTO:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     text_PGGS.trans_PGGS(u"Solidarity"))
                 for v in self._sinistred.viewvalues():
@@ -222,7 +219,7 @@ class Serveur(object):
                     self._le2mserv.gestionnaire_graphique.infoserv(
                         u"G{}: {}".format(v["paired"].split("_")[2], gcontrib))
 
-            elif pms.TREATMENT == pms.get_treatment("sol_vote"):
+            elif pms.TREATMENT == pms.SOL_VOTE:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     text_PGGS.trans_PGGS(u"Solidarity"))
                 for v in self._sinistred.viewvalues():

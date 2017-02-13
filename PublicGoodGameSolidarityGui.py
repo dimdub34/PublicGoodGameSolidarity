@@ -91,16 +91,19 @@ class DConfig(QtGui.QDialog):
         super(DConfig, self).__init__(parent)
 
         layout = QtGui.QVBoxLayout(self)
+        self.setLayout(layout)
 
-        self._combo_treat = WCombo(
-            label=texts_PGGS.trans_PGGS(u"Treatment choice"),
-            items=[v for k, v in sorted(pms.TREATMENTS.viewitems())])
-        self._combo_treat.ui.comboBox.setCurrentIndex(pms.TREATMENT)
-        layout.addWidget(self._combo_treat)
+        form = QtGui.QFormLayout()
+        layout.addLayout(form)
+
+        self._combo_treat = QtGui.QComboBox()
+        self._combo_treat.addItems(
+            [v for k, v in sorted(pms.TREATMENTS_NAMES.viewitems())])
+        form.addRow(QtGui.QLabel(le2mtrans(u"Treatment")), self._combo_treat)
 
         buttons = QtGui.QDialogButtonBox(
             QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
-        buttons.accepted.connect(self.accept)
+        buttons.accepted.connect(self._accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
@@ -108,8 +111,9 @@ class DConfig(QtGui.QDialog):
         self.adjustSize()
         self.setFixedSize(self.size())
 
-    def get_config(self):
-        return self._combo_treat.get_currentindex()
+    def _accept(self):
+        pms.TREATMENT = self._combo_treat.currentIndex()
+        self.accept()
 
 
 class DVote(QtGui.QDialog):
@@ -129,7 +133,7 @@ class DVote(QtGui.QDialog):
         self._vote = WRadio(
             parent=self, automatique=self._automatique,
             label=texts_PGGS.trans_PGGS(u"Your vote"),
-            texts=[v for k, v in sorted(texts_PGGS.VOTES.iteritems())])
+            texts=[v for k, v in sorted(texts_PGGS.VOTES.viewitems())])
         layout.addWidget(self._vote)
 
         buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)

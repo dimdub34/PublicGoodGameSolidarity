@@ -49,11 +49,9 @@ class Serveur(object):
         """
         screen = DConfig(self._le2mserv.gestionnaire_graphique.screen)
         if screen.exec_():
-            treat = screen.get_config()
-            pms.TREATMENT = treat
-            self._le2mserv.gestionnaire_graphique.display_statusbar(
+            self._le2mserv.gestionnaire_graphique.infoserv(
                 le2mtrans(u"Treatment") + u": {}".format(
-                    pms.get_treatment(pms.TREATMENT)))
+                    pms.TREATMENTS_NAMES[pms.TREATMENT]))
 
     @defer.inlineCallbacks
     def _demarrer(self):

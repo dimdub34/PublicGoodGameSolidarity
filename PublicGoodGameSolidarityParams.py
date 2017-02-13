@@ -7,7 +7,12 @@ developer
 """
 
 # variables
-TREATMENTS = {0: "baseline", 1: "sol_without", 2: "sol_auto", 3: "sol_vote"}
+BASELINE = 0
+SOL_WITHOUT = 1
+SOL_AUTO = 2
+SOL_VOTE = 3
+TREATMENTS_NAMES = {BASELINE: "BASELINE", SOL_WITHOUT: "SOL_WITHOUT",
+                    SOL_AUTO: "SOL_AUTO", SOL_VOTE: "SOL_VOTE"}
 IN_FAVOR = 0
 AGAINST = 1
 
@@ -25,13 +30,3 @@ DECISION_MIN = 0
 DECISION_MAX = 20
 DECISION_STEP = 1
 
-
-def get_treatment(code_or_name):
-    if type(code_or_name) is int:
-        return TREATMENTS.get(code_or_name, None)
-    elif type(code_or_name) is str:
-        for k, v in TREATMENTS.viewitems():
-            if v == code_or_name.lower():
-                return k
-    else:
-        return None

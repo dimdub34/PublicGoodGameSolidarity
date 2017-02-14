@@ -207,6 +207,13 @@ class PartiePGGS(Partie):
         self.joueur.info('ok')
         self.joueur.remove_waitmode()
 
+    @defer.inlineCallbacks
+    def display_expectations(self):
+        logger.debug(u"{} display_expectation".format(self.joueur))
+        self.currentperiod.PGGS_expectation = yield (
+            self.remote.callRemote("display_expectations"))
+        self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
+        self.joueur.remove_waitmode()
 
 class RepetitionsPGGS(Base):
     __tablename__ = 'partie_PublicGoodGameSolidarity_repetitions'
@@ -236,6 +243,7 @@ class RepetitionsPGGS(Base):
     PGGS_politics = Column(Integer)
     PGGS_risk = Column(Integer)
     PGGS_inequality = Column(Integer)
+    PGGS_expectation = Column(Integer)
 
     def __init__(self, period):
         self.PGGS_treatment = pms.TREATMENT

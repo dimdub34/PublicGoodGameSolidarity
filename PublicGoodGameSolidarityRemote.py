@@ -7,7 +7,8 @@ from client.cltremote import IRemote
 from client.cltgui.cltguidialogs import GuiRecapitulatif
 from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
-from PublicGoodGameSolidarityGui import GuiDecision, DVote, DQuestFinalPGGS
+from PublicGoodGameSolidarityGui import (GuiDecision, DVote, DQuestFinalPGGS,
+                                         DExpectation)
 import PublicGoodGameSolidarityTexts as texts_PGGS
 
 
@@ -111,6 +112,28 @@ class RemotePGGS(IRemote):
         logger.info(u"{} display_payoffs".format(self.le2mclt.uid))
         return self.le2mclt.get_remote("base").remote_display_information(
             self._payoffs[sequence]["txt"])
+
+    def remote_display_expectations(self):
+        """
+        Display the dialog in which the subject enters his/her expectation
+        :return:
+        """
+        logger.debug(u"{} display_expectations".format(self.le2mclt.uid))
+        if self.le2mclt.simulation:
+            expectation = \
+                random.randrange(
+                    pms.DECISION_MIN, pms.DECISION_MAX + pms.DECISION_STEP,
+                    pms.DECISION_STEP)
+            logger.info(u"{} Send back {}".format(self.le2mclt.uid, expectation))
+            return expectation
+        else:
+            text_expectation = texts_PGGS.get_text_expectation(self.currentperiod)
+            defered = defer.Deferred()
+            screen_expectation = DExpectation(
+                defered, self.le2mclt.automatique, self.le2mclt.screen,
+                text_expectation)
+            screen_expectation.show()
+            return defered
 
     def _create_histo_vars(self):
         self._histo_vars = ["PGGS_period", "PGGS_indivaccount",

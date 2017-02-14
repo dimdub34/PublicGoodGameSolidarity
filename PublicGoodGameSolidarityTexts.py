@@ -141,3 +141,16 @@ def get_text_summary(period_content):
                     get_pluriel(period_content.get("PGGS_periodpayoff"),
                                 pms.MONNAIE))
     return txt
+
+
+def get_text_expectation(period):
+    text = u""
+    if period == 1:
+        text = trans_PGGS(u"How much token(s) do you think the other members "
+                          u"of your group will put, on average, in the "
+                          u"collective account?")
+    elif period == pms.NOMBRE_PERIODES:
+        text = trans_PGGS(u"If you had to play the game once again with the "
+                          u"group members, how much token(s) do you think they "
+                          u"would put, on average, in the collective account?")
+    return text

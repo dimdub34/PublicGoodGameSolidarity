@@ -17,13 +17,14 @@ IN_FAVOR = 0
 AGAINST = 1
 
 # parameters
-TREATMENT = 0  # change from the configuration screen
+TREATMENT = BASELINE  # change from the configuration screen
 TAUX_CONVERSION = 0.05
 NOMBRE_PERIODES = 10
 TAILLE_GROUPES = 5
 MONNAIE = u"ecu"
 MPCR_NORM = 0.5
 MPCR_SOL = 0.25
+EXPECTATIONS = True
 
 # DECISION
 DECISION_MIN = 0

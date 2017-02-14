@@ -10,6 +10,7 @@ import PublicGoodGameSolidarityParams as pms
 from client.cltgui.cltguiwidgets import WExplication, WCombo, WSpinbox, \
     WPeriod, WRadio
 import PublicGoodGameSolidarityTexts as texts_PGGS
+from PublicGoodGameSolidarityTexts import trans_PGGS
 
 logger = logging.getLogger("le2m")
 
@@ -39,7 +40,7 @@ class GuiDecision(QtGui.QDialog):
         max = 0 if self._sinistred else pms.DECISION_MAX
         self._wcontrib = WSpinbox(
             minimum=0, maximum=max, automatique=self._automatique, parent=self,
-            label=texts_PGGS.trans_PGGS(u"How much do you invest in "
+            label=trans_PGGS(u"How much do you invest in "
                                         u"the public account?"))
         layout.addWidget(self._wcontrib)
 
@@ -95,11 +96,64 @@ class DConfig(QtGui.QDialog):
 
         form = QtGui.QFormLayout()
         layout.addLayout(form)
-
+        
+        # treatment
         self._combo_treat = QtGui.QComboBox()
         self._combo_treat.addItems(
             [v for k, v in sorted(pms.TREATMENTS_NAMES.viewitems())])
         form.addRow(QtGui.QLabel(le2mtrans(u"Treatment")), self._combo_treat)
+        
+        # periods
+        self._spin_periods = QtGui.QSpinBox()
+        self._spin_periods.setMinimum(0)
+        self._spin_periods.setMaximum(100)
+        self._spin_periods.setSingleStep(1)
+        self._spin_periods.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_periods.setFixedWidth(50)
+        self._spin_periods.setValue(pms.NOMBRE_PERIODES)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"Number of periods")),
+                    self._spin_periods)
+        
+        # group size
+        self._spin_group_size = QtGui.QSpinBox()
+        self._spin_group_size.setMinimum(0)
+        self._spin_group_size.setMaximum(100)
+        self._spin_group_size.setSingleStep(1)
+        self._spin_group_size.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_group_size.setFixedWidth(50)
+        self._spin_group_size.setValue(pms.TAILLE_GROUPES)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"Group size")),
+                    self._spin_group_size)
+        
+        # mpcr normal
+        self._spin_mpcr_normal = QtGui.QDoubleSpinBox()
+        self._spin_mpcr_normal.setDecimals(2)
+        self._spin_mpcr_normal.setMinimum(0)
+        self._spin_mpcr_normal.setMaximum(5)
+        self._spin_mpcr_normal.setSingleStep(0.01)
+        self._spin_mpcr_normal.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_mpcr_normal.setFixedWidth(50)
+        self._spin_mpcr_normal.setValue(pms.MPCR_NORM)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"MPCR (normal)")),
+                    self._spin_mpcr_normal)
+        
+        # mpcr solidarity
+        self._spin_mpcr_solidarity = QtGui.QDoubleSpinBox()
+        self._spin_mpcr_solidarity.setDecimals(2)
+        self._spin_mpcr_solidarity.setMinimum(0)
+        self._spin_mpcr_solidarity.setMaximum(5)
+        self._spin_mpcr_solidarity.setSingleStep(0.01)
+        self._spin_mpcr_solidarity.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_mpcr_solidarity.setFixedWidth(50)
+        self._spin_mpcr_solidarity.setValue(pms.MPCR_SOL)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"MPCR (solidarity)")),
+                    self._spin_mpcr_solidarity)
+
+        # expectation
+        self._checkbox_expectation = QtGui.QCheckBox()
+        self._checkbox_expectation.setChecked(pms.EXPECTATIONS)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"Expectations")),
+                    self._checkbox_expectation)
 
         buttons = QtGui.QDialogButtonBox(
             QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
@@ -113,6 +167,11 @@ class DConfig(QtGui.QDialog):
 
     def _accept(self):
         pms.TREATMENT = self._combo_treat.currentIndex()
+        pms.NOMBRE_PERIODES = self._spin_periods.value()
+        pms.TAILLE_GROUPES = self._spin_group_size.value()
+        pms.MPCR_NORM = self._spin_mpcr_normal.value()
+        pms.MPCR_SOL = self._spin_mpcr_solidarity.value()
+        pms.EXPECTATIONS = self._checkbox_expectation.isChecked()
         self.accept()
 
 
@@ -313,3 +372,52 @@ class DSequenceChoice(QtGui.QDialog):
 
     def get_choice(self):
         return self._choice.get_value()
+
+
+class DExpectation(QtGui.QDialog):
+    def __init__(self, defered, automatique, parent, text):
+        QtGui.QDialog.__init__(self, parent)
+
+        self._defered = defered
+        self._automatique = automatique
+
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
+
+        self._spin_expectation = WSpinbox(
+            parent=self, minimum=pms.DECISION_MIN, maximum=pms.DECISION_MAX,
+            interval=pms.DECISION_STEP, label=text,
+            automatique=self._automatique)
+        layout.addWidget(self._spin_expectation)
+
+        button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
+        button.accepted.connect(self._accept)
+        layout.addWidget(button)
+
+        self.setWindowTitle(trans_PGGS(u"Expectations"))
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
+        if self._automatique:
+            self._timer = QtCore.QTimer()
+            self._timer.timeout.connect(self._accept)
+            self._timer.start(7000)
+
+    def reject(self):
+        pass
+
+    def _accept(self):
+        try:
+            self._timer.stop()
+        except AttributeError:
+            pass
+        expectation = self._spin_expectation.get_value()
+        if not self._automatique:
+            confirm = QtGui.QMessageBox.question(
+                self, u"Confirmation", le2mtrans(u"Do you confirm your choice?"),
+                QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
+            if confirm != QtGui.QMessageBox.Yes:
+                return
+        logger.info(le2mtrans(u"Send back {}".format(expectation)))
+        self.accept()
+        self._defered.callback(expectation)

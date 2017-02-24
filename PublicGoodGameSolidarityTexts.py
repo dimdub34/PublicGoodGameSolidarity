@@ -151,6 +151,7 @@ def get_text_expectation(period):
                           u"collective account?")
     elif period == pms.NOMBRE_PERIODES:
         text = trans_PGGS(u"If you had to play the game once again with the "
-                          u"group members, how much token(s) do you think they "
-                          u"would put, on average, in the collective account?")
+                          u"same group members, how much token(s) do you think "
+                          u"they would put, on average, in the collective "
+                          u"account?")
     return text

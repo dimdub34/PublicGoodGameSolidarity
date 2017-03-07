@@ -30,6 +30,8 @@ class Serveur(object):
             display_information2(
                 utiltools.get_module_info(pms), le2mtrans(u"Parameters"))
         actions[le2mtrans(u"Start")] = lambda _: self._demarrer()
+        actions[trans_PGGS(u"Display expectations")] = \
+            self._display_expectations()
         actions[le2mtrans(u"Display payoffs")] = self._display_payoffs
 
         self._le2mserv.gestionnaire_graphique.add_topartmenu(
@@ -53,14 +55,15 @@ class Serveur(object):
             params = [
                 le2mtrans(u"Treatment") + u": {}".format(
                     pms.TREATMENTS_NAMES[pms.TREATMENT]),
-                trans_PGGS(u"Number of periods") + u": {}".format(pms.NOMBRE_PERIODES),
-                trans_PGGS(u"Groups' size") + u": {}".format(pms.TAILLE_GROUPES),
+                trans_PGGS(u"Number of periods") + u": {}".format(
+                    pms.NOMBRE_PERIODES),
+                trans_PGGS(u"Groups' size") + u": {}".format(
+                    pms.TAILLE_GROUPES),
                 trans_PGGS(u"MPCR (normal)") + u": {}".format(pms.MPCR_NORM),
                 trans_PGGS(u"MPCR (solidarity)") + u": {}".format(pms.MPCR_SOL),
                 trans_PGGS(u"Expectations") + u": {}".format(pms.EXPECTATIONS)
             ]
             self._le2mserv.gestionnaire_graphique.infoserv(params)
-
 
     @defer.inlineCallbacks
     def _demarrer(self):
@@ -267,21 +270,10 @@ class Serveur(object):
                 "PublicGoodGameSolidarity")
         
             # summary ----------------------------------------------------------
-            # also displayed on every screen
             yield(self._le2mserv.gestionnaire_experience.run_step(
                 le2mtrans(u"Summary"), self._tous, "display_summary"))
         
         # End of part ==========================================================
-        if pms.EXPECTATIONS and self._currentsequence == 1:
-            yield (self._le2mserv.gestionnaire_experience.run_step(
-                trans_PGGS(u"Expectations"), self._tous,
-                "display_expectations"))
-            for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
-                    "PublicGoodGameSolidarity").viewitems():
-                group_expectation = \
-                    sum([j.currentperiod.PGGS_expectation for j in m])
-                self._le2mserv.gestionnaire_graphique.infoserv(
-                    u"G{}: {}".format(g.split("_")[2], group_expectation))
         yield (self._le2mserv.gestionnaire_experience.finalize_part(
             "PublicGoodGameSolidarity"))
 
@@ -325,3 +317,36 @@ class Serveur(object):
         yield (self._le2mserv.gestionnaire_experience.run_step(
             trans_PGGS(u"Final questionnaire"), self._tous,
             "display_questfinal"))
+
+    @defer.inlineCallbacks
+    def _display_expectations(self):
+        if not self._le2mserv.gestionnaire_base.is_created():
+            QtGui.QMessageBox.warning(
+                self._le2mserv.gestionnaire_graphique.screen,
+                le2mtrans(u"Warning"),
+                le2mtrans(u"There is no database yet. You first need to "
+                          u"load at least one part."))
+            return
+        if not hasattr(self, "_tous"):
+            QtGui.QMessageBox.warning(
+                self._le2mserv.gestionnaire_graphique.screen,
+                le2mtrans(u"Warning"),
+                trans_PGGS(u"PGGS has to be run before to "
+                         u"start this expectation step"))
+            return
+        confirmation = QtGui.QMessageBox.question(
+            self._le2mserv.gestionnaire_graphique.screen,
+            le2mtrans(u"Confirmation"),
+            le2mtrans(u"Display the expectation screen on clients?"),
+            QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+        if confirmation != QtGui.QMessageBox.Ok:
+            return
+        yield (self._le2mserv.gestionnaire_experience.run_step(
+            trans_PGGS(u"Expectations"), self._tous,
+            "display_expectations"))
+        for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
+                "PublicGoodGameSolidarity").viewitems():
+            group_expectation = \
+                sum([j.currentperiod.PGGS_expectation for j in m])
+            self._le2mserv.gestionnaire_graphique.infoserv(
+                u"G{}: {}".format(g.split("_")[2], group_expectation))

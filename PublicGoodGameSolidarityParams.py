@@ -25,9 +25,16 @@ MONNAIE = u"ecu"
 MPCR_NORM = 0.5
 MPCR_SOL = 0.25
 EXPECTATIONS = True
+EXPECTATIONS_PERIODS = [1]
 
 # DECISION
 DECISION_MIN = 0
 DECISION_MAX = 20
 DECISION_STEP = 1
 
+
+def get_payoff_expectation(expectation, average_others):
+    if abs(expectation - round(average_others, 0)) <= 1:
+        return 1
+    else:
+        return 0

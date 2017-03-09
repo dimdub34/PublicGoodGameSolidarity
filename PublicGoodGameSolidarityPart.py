@@ -215,6 +215,7 @@ class PartiePGGS(Partie):
         self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
         self.joueur.remove_waitmode()
 
+
 class RepetitionsPGGS(Base):
     __tablename__ = 'partie_PublicGoodGameSolidarity_repetitions'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -244,9 +245,8 @@ class RepetitionsPGGS(Base):
     PGGS_risk = Column(Integer)
     PGGS_inequality = Column(Integer)
     PGGS_expectation = Column(Integer)
+    PGGS_expectation_payoff = Column(Integer)
     PGGS_average_others = Column(Integer)
-    #todo: create the field in the existing table
-    #todo: find a way to compute the average of others and to
 
     def __init__(self, period):
         self.PGGS_treatment = pms.TREATMENT

@@ -31,7 +31,7 @@ class Serveur(object):
                 utiltools.get_module_info(pms), le2mtrans(u"Parameters"))
         actions[le2mtrans(u"Start")] = lambda _: self._demarrer()
         actions[trans_PGGS(u"Display expectations")] = \
-            self._display_expectations()
+            lambda _: self._display_expectations()
         actions[le2mtrans(u"Display payoffs")] = self._display_payoffs
 
         self._le2mserv.gestionnaire_graphique.add_topartmenu(
@@ -208,7 +208,7 @@ class Serveur(object):
                 self._tous, "newperiod", period))
 
             # expectation ------------------------------------------------------
-            if pms.EXPECTATIONS and period == 1:
+            if pms.EXPECTATIONS and period in pms.EXPECTATIONS_PERIODS:
                 yield (self._le2mserv.gestionnaire_experience.run_step(
                     trans_PGGS(u"Expectations"), self._tous,
                     "display_expectations"))
@@ -264,6 +264,18 @@ class Serveur(object):
                                 v["paired"].split("_")[2],
                                 v["paired_comp"][0].currentperiod.
                                     PGGS_groupaccountshared))
+
+            # compute difference between expectations and realisations
+            if pms.EXPECTATIONS and period in pms.EXPECTATIONS_PERIODS:
+                for j in self._tous:
+                    j.currentperiod.PGGS_average_others = \
+                        (j.currentperiod.PGGS_groupaccountsum -
+                        j.currentperiod.PGGS_groupaccount) / \
+                        (pms.TAILLE_GROUPES - 1)
+                    j.currentperiod.PGGS_expectation_payoff = \
+                        pms.get_payoff_expectation(
+                            j.currentperiod.PGGS_expectation,
+                            j.currentperiod.PGGS_average_others)
 
             # period payoffs ---------------------------------------------------
             self._le2mserv.gestionnaire_experience.compute_periodpayoffs(

@@ -215,6 +215,22 @@ class PartiePGGS(Partie):
         self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
         self.joueur.remove_waitmode()
 
+    @defer.inlineCallbacks
+    def display_effort(self, grilles):
+        """
+        the grids are arguments because we want that each player faces the
+        same grids. Grids are then displayed on the client side. We get back
+        the number of grids successfully counted.
+        :param grilles:
+        :return:
+        """
+        logger.debug(u"{} display_effort".format(self.joueur))
+        self.currentperiod.PGGS_grids = yield (
+            self.remote.callRemote("display_effort", grilles))
+        self.joueur.info(u"{}".format(self.currentperiod.PGGS_grids))
+        self.joueur.remove_waitmode()
+
+
 
 class RepetitionsPGGS(Base):
     __tablename__ = 'partie_PublicGoodGameSolidarity_repetitions'
@@ -247,6 +263,7 @@ class RepetitionsPGGS(Base):
     PGGS_expectation = Column(Integer)
     PGGS_expectation_payoff = Column(Integer)
     PGGS_average_others = Column(Integer)
+    PGGS_grids = Column(Integer)
 
     def __init__(self, period):
         self.PGGS_treatment = pms.TREATMENT

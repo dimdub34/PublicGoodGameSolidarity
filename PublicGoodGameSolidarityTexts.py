@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
 from util.utili18n import le2mtrans
 from util.utiltools import get_pluriel
 import PublicGoodGameSolidarityParams as pms
@@ -8,10 +9,14 @@ import configuration.configparam as params
 import gettext
 
 
-localedir = os.path.join(
-    params.getp("PARTSDIR"), "PublicGoodGameSolidarity", "locale")
-trans_PGGS = gettext.translation(
-  "PublicGoodGameSolidarity", localedir, languages=[params.getp("LANG")]).ugettext
+try:
+    localedir = os.path.join(
+        params.getp("PARTSDIR"), "PublicGoodGameSolidarity", "locale")
+    trans_PGGS = gettext.translation(
+      "PublicGoodGameSolidarity", localedir,
+        languages=[params.getp("LANG")]).ugettext
+except (AttributeError, IOError):
+    trans_PGGS = lambda x: x
 
 
 VOTES = {
@@ -148,3 +153,19 @@ def get_text_expectation(period):
                       u"of your group will put, on average, in the "
                       u"collective account?".format(pms.TAILLE_GROUPES-1))
     return text
+
+
+def get_text_explanation_grilles():
+    text = trans_PGGS("Count the number of 1 in the following grids")
+    return text
+
+
+def get_grille_to_html(grille):
+    html = "<table style='width: 150px;'>"
+    for l in grille:
+        html += "<tr>"
+        for c in l:
+            html += "<td style='width: 15px;'>{}</td>".format(c)
+        html += "</tr>"
+    html += "</table>"
+    return html

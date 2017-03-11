@@ -8,7 +8,7 @@ from client.cltgui.cltguidialogs import GuiRecapitulatif
 from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
 from PublicGoodGameSolidarityGui import (GuiDecision, DVote, DQuestFinalPGGS,
-                                         DExpectation)
+                                         DExpectation, DEffort)
 import PublicGoodGameSolidarityTexts as texts_PGGS
 
 
@@ -133,6 +133,22 @@ class RemotePGGS(IRemote):
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
                 text_expectation)
             screen_expectation.show()
+            return defered
+
+    def remote_display_effort(self, grilles):
+        logger.debug(u"{} display_effort".format(self.le2mclt.uid))
+        if self.le2mclt.simulation:
+            answers = 0
+            for i in range(len(grilles)):
+                answers += random.randint(0, 1)  # 1 if success, o otherwise
+            logger.info(u"{} send back {}".format(self.le2mclt.uid, answers))
+            return answers
+        else:
+            defered = defer.Deferred()
+            screen_effort = DEffort(
+                defered, self.le2mclt.automatique, self.le2mclt.screen,
+                grilles)
+            screen_effort.show()
             return defered
 
     def _create_histo_vars(self):

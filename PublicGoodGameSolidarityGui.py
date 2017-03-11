@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+import sys
 import logging
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore, QtWebKit
 from twisted.internet import defer
+import numpy as np
+from random import randint
 from util.utili18n import le2mtrans
 from client.cltgui.cltguidialogs import GuiHistorique, DQuestFinal
 from server.servgui.servguidialogs import GuiPayoffs
 import PublicGoodGameSolidarityParams as pms
-from client.cltgui.cltguiwidgets import WExplication, WCombo, WSpinbox, \
-    WPeriod, WRadio
+from client.cltgui.cltguiwidgets import (WExplication, WCombo, WSpinbox,
+                                         WPeriod, WRadio, WCompterebours)
 import PublicGoodGameSolidarityTexts as texts_PGGS
 from PublicGoodGameSolidarityTexts import trans_PGGS
+
 
 logger = logging.getLogger("le2m")
 
@@ -155,6 +160,28 @@ class DConfig(QtGui.QDialog):
         form.addRow(QtGui.QLabel(trans_PGGS(u"Expectations")),
                     self._checkbox_expectation)
 
+        # number of grid
+        self._spin_nb_grilles = QtGui.QSpinBox()
+        self._spin_nb_grilles.setMinimum(0)
+        self._spin_nb_grilles.setMaximumWidth(100)
+        self._spin_nb_grilles.setSingleStep(1)
+        self._spin_nb_grilles.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_nb_grilles.setValue(pms.NB_GRILLES)
+        self._spin_nb_grilles.setFixedWidth(50)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"Number of grids")),
+                    self._spin_nb_grilles)
+
+        # grid size
+        self._spin_grilles_size = QtGui.QSpinBox()
+        self._spin_grilles_size.setMinimum(0)
+        self._spin_grilles_size.setMaximumWidth(100)
+        self._spin_grilles_size.setSingleStep(1)
+        self._spin_grilles_size.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_grilles_size.setValue(pms.SIZE_GRILLES)
+        self._spin_grilles_size.setFixedWidth(50)
+        form.addRow(QtGui.QLabel(trans_PGGS(u"Grid size")),
+                    self._spin_grilles_size)
+
         buttons = QtGui.QDialogButtonBox(
             QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         buttons.accepted.connect(self._accept)
@@ -172,6 +199,8 @@ class DConfig(QtGui.QDialog):
         pms.MPCR_NORM = self._spin_mpcr_normal.value()
         pms.MPCR_SOL = self._spin_mpcr_solidarity.value()
         pms.EXPECTATIONS = self._checkbox_expectation.isChecked()
+        pms.NB_GRILLES = self._spin_nb_grilles.value()
+        pms.SIZE_GRILLES = self._spin_grilles_size.value()
         self.accept()
 
 
@@ -230,7 +259,7 @@ class DVote(QtGui.QDialog):
                 self, le2mtrans(u"Confirmation"),
                 le2mtrans(u"Do you confirm your choice"),
                 QtGui.QMessageBox.No | QtGui.QMessageBox.Yes) != \
-                QtGui.QMessageBox.Yes:
+                    QtGui.QMessageBox.Yes:
                 return
 
         logger.info(u"Send back {}".format(vote))
@@ -421,3 +450,128 @@ class DExpectation(QtGui.QDialog):
         logger.info(le2mtrans(u"Send back {}".format(expectation)))
         self.accept()
         self._defered.callback(expectation)
+
+
+class WGrille(QtGui.QWidget):
+    def __init__(self, parent, grille, automatique):
+        QtGui.QWidget.__init__(self, parent)
+        self._grille = grille
+        self._is_ok = False
+
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
+
+        webview = QtWebKit.QWebView(self)
+        webview.setHtml(texts_PGGS.get_grille_to_html(self._grille))
+        webview.setFixedSize(160, 160)
+        layout.addWidget(webview)
+
+        form = QtGui.QFormLayout()
+        layout.addLayout(form)
+
+        self._spin_grille =QtGui.QSpinBox()
+        self._spin_grille.setMinimum(0)
+        self._spin_grille.setMaximum(100)
+        self._spin_grille.setSingleStep(1)
+        self._spin_grille.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        self._spin_grille.setFixedWidth(50)
+        form.addRow(QtGui.QLabel(trans_PGGS("Number of 1: ")),
+                       self._spin_grille)
+
+        self._pushButton_ok = QtGui.QPushButton("Ok")
+        self._pushButton_ok.setFixedWidth(50)
+        self._pushButton_ok.clicked.connect(self._check)
+        self._label_result = QtGui.QLabel(trans_PGGS("?"))
+        form.addRow(self._pushButton_ok, self._label_result)
+
+        if automatique:
+            if randint(0, 1):
+                self._spin_grille.setValue(np.sum(self._grille))
+            else:
+                self._spin_grille.setValue(randint(0, pms.SIZE_GRILLES**2 + 1))
+            self._pushButton_ok.click()
+
+    def _check(self):
+        answer = self._spin_grille.value()
+        if answer == np.sum(self._grille):
+            self._is_ok = True
+            self._label_result.setText("V")
+            self._label_result.setStyleSheet("color: green; font-weight: bold;")
+            self._spin_grille.setEnabled(False)
+            self._pushButton_ok.setEnabled(False)
+        else:
+            self._is_ok = False
+            self._label_result.setText("X")
+            self._label_result.setStyleSheet("color: red; font-weight: bold;")
+
+    def is_ok(self):
+        return self._is_ok
+
+
+class DEffort(QtGui.QDialog):
+    def __init__(self, defered, automatique, parent, grilles):
+        QtGui.QDialog.__init__(self, parent)
+
+        self._defered = defered
+        self._automatique = automatique
+        self._grilles = grilles
+
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
+
+        explanation = WExplication(
+            parent=self, text=texts_PGGS.get_text_explanation_grilles())
+        layout.addWidget(explanation)
+
+        self._countdown = WCompterebours(self, temps=pms.TIME_TO_FILL_GRILLES,
+                                   actionfin=self._accept)
+        layout.addWidget(self._countdown)
+
+        grid_layout = QtGui.QGridLayout()
+        layout.addLayout(grid_layout)
+
+        self._widgets_grilles = list()
+        current_line = 0
+        for i, g in enumerate(self._grilles):
+            self._widgets_grilles.append(WGrille(self, g, self._automatique))
+            grid_layout.addWidget(
+                self._widgets_grilles[-1], current_line,
+                i - current_line * pms.NB_GRILLES_PER_LINE)
+            if i > 0 and (i+1) % pms.NB_GRILLES_PER_LINE == 0:
+                current_line += 1
+
+        buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
+        buttons.accepted.connect(self._accept)
+        layout.addWidget(buttons)
+
+        self.adjustSize()
+        self.setFixedSize(self.size())
+        self.setWindowTitle(trans_PGGS("Effort"))
+
+    def reject(self):
+        pass
+
+    def _accept(self):
+        if self._countdown.is_running():
+            confirmation = QtGui.QMessageBox.question(
+                self, "Confirmation", "Do you want to quit before the end of "
+                                      "the timer?",
+                QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes)
+            if confirmation != QtGui.QMessageBox.Yes:
+                return
+        answers = sum([int(g.is_ok()) for g in self._widgets_grilles])
+        if not self._automatique:
+            QtGui.QMessageBox.information(
+                self, "Information",
+                trans_PGGS("You've found {} grids.".format(answers)))
+        logger.info("send back {}".format(answers))
+        self.accept()
+        self._defered.callback(answers)
+
+
+if __name__ == "__main__":
+    app = QtGui.QApplication(sys.argv)
+    grilles = pms.get_grilles()
+    screen = DEffort(None, False, None, grilles)
+    screen.show()
+    sys.exit(app.exec_())

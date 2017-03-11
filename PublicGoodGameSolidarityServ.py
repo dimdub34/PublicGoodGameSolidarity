@@ -71,6 +71,9 @@ class Serveur(object):
         Start the part
         :return:
         """
+        def group_format(group_name):
+            return group_name.split("_")[2]
+
         # check conditions =====================================================
         if self._le2mserv.gestionnaire_joueurs.nombre_joueurs == 0:
             self._le2mserv.gestionnaire_graphique.display_error(
@@ -119,72 +122,102 @@ class Serveur(object):
         # Sinistre =============================================================
         if pms.TREATMENT == pms.SOL_WITHOUT or \
             pms.TREATMENT == pms.SOL_AUTO or \
-            pms.TREATMENT == pms.SOL_VOTE:
-            groups_keys = list(self._le2mserv.gestionnaire_groupes.get_groupes(
-                "PublicGoodGameSolidarity").viewkeys())
+            pms.TREATMENT == pms.SOL_VOTE or \
+            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
+            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
 
-            self._sinistred = {}
-            sinistred_no = groups_keys[:len(groups_keys)//2]
-            sinistred_yes = groups_keys[len(groups_keys)//2:]
-            logger.debug("sinistred_no: {} / sinistred_yes: {}".format(
-                sinistred_no, sinistred_yes))
+            groups_keys = self._le2mserv.gestionnaire_groupes.get_groupes(
+                "PublicGoodGameSolidarity").keys()
 
-            for i, g in enumerate(sinistred_no):
-                self._sinistred[g] = {}
-                self._sinistred[g]["comp"] = [
-                    j.get_part("PublicGoodGameSolidarity") for j in
-                     self._le2mserv.gestionnaire_groupes.get_composition_groupe(g)]
-                self._sinistred[g]["paired"] = sinistred_yes[i]
-                self._sinistred[g]["paired_comp"] = [
-                    j.get_part("PublicGoodGameSolidarity") for j in
-                     self._le2mserv.gestionnaire_groupes.get_composition_groupe(
-                         sinistred_yes[i])]
+            # the first ones are not sinistred, the seconds ones are
+            groups_pairs = zip(
+                groups_keys[:len(groups_keys)//2],
+                groups_keys[len(groups_keys) // 2:])
 
+            # display on server list
             self._le2mserv.gestionnaire_graphique.infoserv(
-                trans_PGGS(u"Not sinistred") + u": {}".format(
-                    [u"G{}".format(g.split("_")[2]) for g in
-                     self._sinistred.viewkeys()]))
+                u"Group pairs (not sinistred, sinistred)")
+            for notsin, sin in groups_pairs:
+                self._le2mserv.gestionnaire_graphique.infoserv(
+                    u"G" + group_format(notsin) + u"- G" + group_format(sin))
 
-            self._le2mserv.gestionnaire_graphique.infoserv(
-                trans_PGGS(u"Sinistred") + u": {}".format(
-                    [u"G{}".format(v["paired"].split("_")[2]) for v in
-                     self._sinistred.viewvalues()]))
-
-            for v in self._sinistred.viewvalues():
-                for j in v["comp"]:
+            # set sinistred or not in players' data
+            self._not_sinistred_players = list()
+            self._sinistred_players = list()
+            for notsin, sin in groups_pairs:
+                notsin_players = [
+                    j.get_part("PublicGoodGameSolidarity") for j in
+                    self._le2mserv.gestionnaire_groupes.
+                        get_composition_groupe(notsin)]
+                self._not_sinistred_players.extend(notsin_players)
+                for j in notsin_players:
                     j.sinistred = False
-                for j in v["paired_comp"]:
+                sin_players = [
+                    j.get_part("PublicGoodGameSolidarity") for j in
+                    self._le2mserv.gestionnaire_groupes.
+                        get_composition_groupe(sin)]
+                self._sinistred_players.extend(sin_players)
+                for j in sin_players:
                     j.sinistred = True
+
+            # self._sinistred = {}
+            # sinistred_no = groups_keys[:len(groups_keys)//2]
+            # sinistred_yes = groups_keys[len(groups_keys)//2:]
+            # logger.debug("sinistred_no: {} / sinistred_yes: {}".format(
+            #     sinistred_no, sinistred_yes))
+            #
+            # for i, g in enumerate(sinistred_no):
+            #     self._sinistred[g] = {}
+            #     self._sinistred[g]["comp"] = [
+            #         j.get_part("PublicGoodGameSolidarity") for j in
+            #          self._le2mserv.gestionnaire_groupes.get_composition_groupe(g)]
+            #     self._sinistred[g]["paired"] = sinistred_yes[i]
+            #     self._sinistred[g]["paired_comp"] = [
+            #         j.get_part("PublicGoodGameSolidarity") for j in
+            #          self._le2mserv.gestionnaire_groupes.get_composition_groupe(
+            #              sinistred_yes[i])]
+            #
+            # for v in self._sinistred.viewvalues():
+            #     for j in v["comp"]:
+            #         j.sinistred = False
+            #     for j in v["paired_comp"]:
+            #         j.sinistred = True
 
             yield (self._le2mserv.gestionnaire_experience.run_step(
                 trans_PGGS(u"Information sinistre"), self._tous,
                 "display_infosinistre"))
 
             # vote =============================================================
-            if pms.TREATMENT == pms.SOL_VOTE:
-                vote_players = []
-                for v in self._sinistred.viewvalues():
-                    vote_players.extend(v["comp"])
-
+            if pms.TREATMENT == pms.SOL_VOTE or \
+                            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                 yield (self._le2mserv.gestionnaire_experience.run_step(
-                    trans_PGGS(u"Vote"), vote_players, "display_vote"))
+                    trans_PGGS(u"Vote"), self._not_sinistred_players,
+                    "display_vote"))
 
-                for k, v in self._sinistred.viewitems():
+                # result of the vote
+                for notsin, sin in groups_pairs:
+                    notsin_p = [j.get_part("PublicGoodGameSolidarity") for j in
+                                self._le2mserv.gestionnaire_groupes.
+                                    get_composition_groupe(notsin)]
+                    sin_p = [j.get_part("PublicGoodGameSolidarity") for j in
+                                self._le2mserv.gestionnaire_groupes.
+                                    get_composition_groupe(sin)]
                     votes_for = pms.TAILLE_GROUPES - \
-                                sum([j.vote for j in v["comp"]])
+                               sum([j.vote for j in notsin_p])
                     vote_majority = pms.IN_FAVOR if \
                         votes_for > pms.TAILLE_GROUPES / 2 else \
                         pms.AGAINST
-                    for j in v["comp"]:
+                    for j in notsin_p:
                         j.set_votes(votesfor=votes_for,
                                     votemajority=vote_majority)
-                    for j in v["paired_comp"]:
+                    for j in sin_p:
                         j.set_votes(votesfor=votes_for,
                                     votemajority=vote_majority)
-
+                    # display on server list
                     self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{}: {}".format(k.split("_")[2],
-                                          text_PGGS.VOTES.get(vote_majority)))
+                        u"G{}: {}".format(
+                            group_format(notsin),
+                            text_PGGS.VOTES.get(vote_majority)))
 
                 # display info vote
                 yield (self._le2mserv.gestionnaire_experience.run_step(
@@ -218,6 +251,14 @@ class Serveur(object):
                         sum([j.currentperiod.PGGS_expectation for j in m])
                     self._le2mserv.gestionnaire_graphique.infoserv(
                         u"G{}: {}".format(g.split("_")[2], group_expectation))
+
+            # effort for sinistred groups --------------------------------------
+            if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
+                pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
+                grilles = pms.get_grilles()
+                yield (self._le2mserv.gestionnaire_experience.run_step(
+                    trans_PGGS(u"Effort"), self._sinistred_players,
+                    "display_effort", grilles))
 
             # decision ---------------------------------------------------------
             # the decision screen is displayed on every screen, even when the

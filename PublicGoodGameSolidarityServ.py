@@ -74,6 +74,11 @@ class Serveur(object):
         def group_format(group_name):
             return group_name.split("_")[2]
 
+        def get_group_players(group):
+            return [j.get_part("PublicGoodGameSolidarity") for j in
+                    self._le2mserv.gestionnaire_groupes.
+                        get_composition_groupe(group)]
+
         # check conditions =====================================================
         if self._le2mserv.gestionnaire_joueurs.nombre_joueurs == 0:
             self._le2mserv.gestionnaire_graphique.display_error(
@@ -145,43 +150,12 @@ class Serveur(object):
             self._not_sinistred_players = list()
             self._sinistred_players = list()
             for notsin, sin in groups_pairs:
-                notsin_players = [
-                    j.get_part("PublicGoodGameSolidarity") for j in
-                    self._le2mserv.gestionnaire_groupes.
-                        get_composition_groupe(notsin)]
-                self._not_sinistred_players.extend(notsin_players)
-                for j in notsin_players:
-                    j.sinistred = False
-                sin_players = [
-                    j.get_part("PublicGoodGameSolidarity") for j in
-                    self._le2mserv.gestionnaire_groupes.
-                        get_composition_groupe(sin)]
-                self._sinistred_players.extend(sin_players)
-                for j in sin_players:
-                    j.sinistred = True
-
-            # self._sinistred = {}
-            # sinistred_no = groups_keys[:len(groups_keys)//2]
-            # sinistred_yes = groups_keys[len(groups_keys)//2:]
-            # logger.debug("sinistred_no: {} / sinistred_yes: {}".format(
-            #     sinistred_no, sinistred_yes))
-            #
-            # for i, g in enumerate(sinistred_no):
-            #     self._sinistred[g] = {}
-            #     self._sinistred[g]["comp"] = [
-            #         j.get_part("PublicGoodGameSolidarity") for j in
-            #          self._le2mserv.gestionnaire_groupes.get_composition_groupe(g)]
-            #     self._sinistred[g]["paired"] = sinistred_yes[i]
-            #     self._sinistred[g]["paired_comp"] = [
-            #         j.get_part("PublicGoodGameSolidarity") for j in
-            #          self._le2mserv.gestionnaire_groupes.get_composition_groupe(
-            #              sinistred_yes[i])]
-            #
-            # for v in self._sinistred.viewvalues():
-            #     for j in v["comp"]:
-            #         j.sinistred = False
-            #     for j in v["paired_comp"]:
-            #         j.sinistred = True
+                self._not_sinistred_players.extend(get_group_players(notsin))
+                self._sinistred_players.extend(get_group_players(sin))
+            for j in self._not_sinistred_players:
+                j.sinistred = False
+            for j in self._sinistred_players:
+                j.sinistred = True
 
             yield (self._le2mserv.gestionnaire_experience.run_step(
                 trans_PGGS(u"Information sinistre"), self._tous,
@@ -196,12 +170,8 @@ class Serveur(object):
 
                 # result of the vote
                 for notsin, sin in groups_pairs:
-                    notsin_p = [j.get_part("PublicGoodGameSolidarity") for j in
-                                self._le2mserv.gestionnaire_groupes.
-                                    get_composition_groupe(notsin)]
-                    sin_p = [j.get_part("PublicGoodGameSolidarity") for j in
-                                self._le2mserv.gestionnaire_groupes.
-                                    get_composition_groupe(sin)]
+                    notsin_p = get_group_players(notsin)
+                    sin_p = get_group_players(sin)
                     votes_for = pms.TAILLE_GROUPES - \
                                sum([j.vote for j in notsin_p])
                     vote_majority = pms.IN_FAVOR if \
@@ -250,9 +220,9 @@ class Serveur(object):
                     group_expectation = \
                         sum([j.currentperiod.PGGS_expectation for j in m])
                     self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{}: {}".format(g.split("_")[2], group_expectation))
+                        u"G{}: {}".format(group_format(g), group_expectation))
 
-            # effort for sinistred groups --------------------------------------
+            # effort for sinistred players -------------------------------------
             if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
                 pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                 grilles = pms.get_grilles()
@@ -268,42 +238,49 @@ class Serveur(object):
 
             for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
                     "PublicGoodGameSolidarity").viewitems():
-                group_contrib = sum([j.currentperiod.PGGS_groupaccount for j in m])
+                group_contrib = sum(
+                    [j.currentperiod.PGGS_groupaccount for j in m])
                 self._le2mserv.gestionnaire_graphique.infoserv(
-                    u"G{}: {}".format(g.split("_")[2], group_contrib))
+                    u"G{}: {}".format(group_format(g), group_contrib))
                 for j in m:
                     j.currentperiod.PGGS_groupaccountsum = group_contrib
 
             if pms.TREATMENT == pms.SOL_AUTO:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     trans_PGGS(u"Solidarity"))
-                for v in self._sinistred.viewvalues():
-                    gcontrib = v["comp"][0].currentperiod.PGGS_groupaccountsum
-                    for j in v["paired_comp"]:
-                        j.currentperiod.PGGS_groupaccountshared = gcontrib
+                for notsin, sin in groups_pairs:
+                    notsin_p = get_group_players(notsin)
+                    sin_p = get_group_players(sin)
+                    notsin_group_contrib = \
+                        notsin_p[0].currentperiod.PGGS_groupaccountsum
+                    for j in sin_p:
+                        j.currentperiod.PGGS_groupaccountshared = \
+                            notsin_group_contrib
                     self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{}: {}".format(v["paired"].split("_")[2], gcontrib))
+                        u"G{}: {}".format(
+                            group_format(sin), notsin_group_contrib))
 
             elif pms.TREATMENT == pms.SOL_VOTE:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     trans_PGGS(u"Solidarity"))
-                for v in self._sinistred.viewvalues():
-                    if v["comp"][0].votemajority == pms.IN_FAVOR:
-                        for j in v["paired_comp"]:
+                for notsin, sin in groups_pairs:
+                    notsin_p = get_group_players(notsin)
+                    sin_p = get_group_players(sin)
+                    if notsin_p[0].votemajority == pms.IN_FAVOR:
+                        for j in sin_p:
                             j.currentperiod.PGGS_groupaccountshared = \
-                                v["comp"][0].currentperiod.PGGS_groupaccountsum
+                                notsin_p[0].currentperiod.PGGS_groupaccountsum
                         self._le2mserv.gestionnaire_graphique.infoserv(
                             u"G{}: {}".format(
-                                v["paired"].split("_")[2],
-                                v["paired_comp"][0].currentperiod.
-                                    PGGS_groupaccountshared))
+                                group_format(sin),
+                                sin_p[0].currentperiod.PGGS_groupaccountshared))
                     else:
-                        for j in v["paired_comp"]:
+                        for j in sin_p:
                             j.currentperiod.PGGS_groupaccountsum = 0
                         self._le2mserv.gestionnaire_graphique.infoserv(
                             u"G{}: {}".format(
-                                v["paired"].split("_")[2],
-                                v["paired_comp"][0].currentperiod.
+                                group_format(sin),
+                                sin_p[0].currentperiod.
                                     PGGS_groupaccountshared))
 
             # compute difference between expectations and realisations

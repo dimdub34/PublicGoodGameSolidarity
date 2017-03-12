@@ -105,6 +105,7 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_decision(self):
         logger.debug(u"{} Decision".format(self.joueur))
+        max_decision = 0
         debut = datetime.now()
         self.currentperiod.PGGS_groupaccount = yield(self.remote.callRemote(
             "display_decision"))
@@ -126,7 +127,10 @@ class PartiePGGS(Partie):
 
         mpcr = pms.MPCR_NORM
         if pms.TREATMENT == pms.SOL_AUTO or \
+            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
                 (pms.TREATMENT == pms.SOL_VOTE and
+                 self.currentperiod.PGGS_votemajority == pms.IN_FAVOR) or \
+                (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
                  self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
             mpcr = pms.MPCR_SOL
             if self.currentperiod.PGGS_sinistred:

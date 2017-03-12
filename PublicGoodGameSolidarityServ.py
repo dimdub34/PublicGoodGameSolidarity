@@ -11,7 +11,6 @@ import PublicGoodGameSolidarityTexts as text_PGGS
 from PublicGoodGameSolidarityTexts import trans_PGGS
 from PublicGoodGameSolidarityGui import DConfig, DGains, DSequenceChoice
 from PyQt4 import QtGui
-import random
 
 
 logger = logging.getLogger("le2m.{}".format(__name__))
@@ -245,7 +244,8 @@ class Serveur(object):
                 for j in m:
                     j.currentperiod.PGGS_groupaccountsum = group_contrib
 
-            if pms.TREATMENT == pms.SOL_AUTO:
+            if pms.TREATMENT == pms.SOL_AUTO or \
+                            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     trans_PGGS(u"Solidarity"))
                 for notsin, sin in groups_pairs:
@@ -260,7 +260,8 @@ class Serveur(object):
                         u"G{}: {}".format(
                             group_format(sin), notsin_group_contrib))
 
-            elif pms.TREATMENT == pms.SOL_VOTE:
+            elif pms.TREATMENT == pms.SOL_VOTE or \
+                            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     trans_PGGS(u"Solidarity"))
                 for notsin, sin in groups_pairs:

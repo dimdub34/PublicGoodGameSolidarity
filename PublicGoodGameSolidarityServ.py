@@ -245,7 +245,7 @@ class Serveur(object):
                     j.currentperiod.PGGS_groupaccountsum = group_contrib
 
             if pms.TREATMENT == pms.SOL_AUTO or \
-                            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
+            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     trans_PGGS(u"Solidarity"))
                 for notsin, sin in groups_pairs:
@@ -253,28 +253,37 @@ class Serveur(object):
                     sin_p = get_group_players(sin)
                     notsin_group_contrib = \
                         notsin_p[0].currentperiod.PGGS_groupaccountsum
-                    for j in sin_p:
+                    # useful for conditional solidarity
+                    sin_group_contrib = \
+                        sin_p[0].currentperiod.PGGS_groupaccountsum
+                    for j in notsin_p + sin_p:
                         j.currentperiod.PGGS_groupaccountshared = \
-                            notsin_group_contrib
+                            notsin_group_contrib + sin_group_contrib
                     self._le2mserv.gestionnaire_graphique.infoserv(
                         u"G{}: {}".format(
-                            group_format(sin), notsin_group_contrib))
+                            group_format(sin),
+                            notsin_group_contrib + sin_group_contrib))
 
             elif pms.TREATMENT == pms.SOL_VOTE or \
-                            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
+            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     trans_PGGS(u"Solidarity"))
                 for notsin, sin in groups_pairs:
                     notsin_p = get_group_players(notsin)
                     sin_p = get_group_players(sin)
                     if notsin_p[0].votemajority == pms.IN_FAVOR:
-                        for j in sin_p:
+                        notsin_group_contrib = \
+                            notsin_p[0].currentperiod.PGGS_groupaccountsum
+                        # useful for conditional solidarity
+                        sin_group_contrib = \
+                            sin_p[0].currentperiod.PGGS_groupaccountsum
+                        for j in notsin_p + sin_p:
                             j.currentperiod.PGGS_groupaccountshared = \
-                                notsin_p[0].currentperiod.PGGS_groupaccountsum
+                                notsin_group_contrib + sin_group_contrib
                         self._le2mserv.gestionnaire_graphique.infoserv(
                             u"G{}: {}".format(
                                 group_format(sin),
-                                sin_p[0].currentperiod.PGGS_groupaccountshared))
+                                notsin_group_contrib + sin_group_contrib))
                     else:
                         for j in sin_p:
                             j.currentperiod.PGGS_groupaccountsum = 0

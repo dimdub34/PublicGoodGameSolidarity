@@ -65,13 +65,20 @@ class RemotePGGS(IRemote):
             self.histo.append(texts_PGGS.get_histo_header(
                 pms.TREATMENT, self._sinistred, self._majorityvote))
 
-    def remote_display_decision(self):
+    def remote_display_decision(self, max_decision):
+        """
+        max_decision tells us what is the endowment of the player.
+        If the player is sinistred it is zero except if this is a treatment
+        with efforts. In that case the endowment is equal to the effort
+        times pms.EFFORT_UNIT_VALUE
+        :param max_decision:
+        :return:
+        """
         logger.info(u"{} Decision".format(self.le2mclt.uid))
         if self.le2mclt.simulation:
-            max = pms.DECISION_MAX if not self._sinistred else 0
             decision = \
                 random.randrange(
-                    pms.DECISION_MIN, max + pms.DECISION_STEP,
+                    pms.DECISION_MIN, max_decision + pms.DECISION_STEP,
                     pms.DECISION_STEP)
             logger.info(u"{} Send back {}".format(self.le2mclt.uid, decision))
             return decision
@@ -80,7 +87,7 @@ class RemotePGGS(IRemote):
             ecran_decision = GuiDecision(
                 defered, self.le2mclt.automatique,
                 self.le2mclt.screen, self.currentperiod, self.histo,
-                self._sinistred)
+                max_decision)
             ecran_decision.show()
             return defered
 

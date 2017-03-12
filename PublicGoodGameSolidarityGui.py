@@ -22,14 +22,14 @@ logger = logging.getLogger("le2m")
 
 class GuiDecision(QtGui.QDialog):
     def __init__(self, defered, automatique, parent, periode, historique,
-                 sinistred):
+                 max_decision):
         super(GuiDecision, self).__init__(parent)
 
         # variables
         self._defered = defered
         self._automatique = automatique
         self._historique = GuiHistorique(self, historique, size=(700, 500))
-        self._sinistred = sinistred
+        self._max_decision = max_decision
 
         layout = QtGui.QVBoxLayout(self)
 
@@ -42,9 +42,9 @@ class GuiDecision(QtGui.QDialog):
             text=texts_PGGS.get_text_explanation(), parent=self, size=(500, 60))
         layout.addWidget(wexplanation)
 
-        max = 0 if self._sinistred else pms.DECISION_MAX
         self._wcontrib = WSpinbox(
-            minimum=0, maximum=max, automatique=self._automatique, parent=self,
+            minimum=0, maximum=self._max_decision,
+            automatique=self._automatique, parent=self,
             label=trans_PGGS(u"How much do you invest in "
                                         u"the public account?"))
         layout.addWidget(self._wcontrib)
@@ -79,7 +79,7 @@ class GuiDecision(QtGui.QDialog):
                 self, le2mtrans(u"Warning"), e.message)
 
         if not self._automatique:
-            if not self._sinistred:
+            if self._max_decision > 0:
                 if not QtGui.QMessageBox.question(
                     self, le2mtrans(u"Confirmation"),
                     le2mtrans(u"Do you confirm your choice?"),

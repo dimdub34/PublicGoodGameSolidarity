@@ -105,10 +105,18 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_decision(self):
         logger.debug(u"{} Decision".format(self.joueur))
-        max_decision = 0
+        if not self.currentperiod.PGGS_sinistred:
+            max_decision = pms.DECISION_MAX
+        else:
+            if pms.TREATMENT == pms.SOL_VOTE or \
+            pms.TREATMENT == pms.SOL_AUTO:
+                max_decision = 0
+            else:
+                max_decision = self.currentperiod.PGGS_grids * \
+                               pms.EFFORT_UNIT_VALUE
         debut = datetime.now()
         self.currentperiod.PGGS_groupaccount = yield(self.remote.callRemote(
-            "display_decision"))
+            "display_decision", max_decision))
         self.currentperiod.PGGS_decisiontime = (datetime.now() - debut).seconds
         if not self.sinistred:
             self.currentperiod.PGGS_indivaccount = \
@@ -133,17 +141,13 @@ class PartiePGGS(Partie):
                 (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
                  self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
             mpcr = pms.MPCR_SOL
-            if self.currentperiod.PGGS_sinistred:
-                self.currentperiod.PGGS_groupaccountsharedpayoff = \
-                    self.currentperiod.PGGS_groupaccountshared * mpcr
-                self.currentperiod.PGGS_periodpayoff = \
-                    self.currentperiod.PGGS_groupaccountsharedpayoff
-            else:
-                self.currentperiod.PGGS_groupaccountpayoff = \
-                    self.currentperiod.PGGS_groupaccountsum * mpcr
-                self.currentperiod.PGGS_periodpayoff = \
-                    self.currentperiod.PGGS_indivaccountpayoff + \
-                    self.currentperiod.PGGS_groupaccountpayoff
+            self.currentperiod.PGGS_groupaccountsharedpayoff = \
+                self.currentperiod.PGGS_groupaccountshared * mpcr
+            self.currentperiod.PGGS_periodpayoff = \
+                self.currentperiod.PGGS_groupaccountsharedpayoff
+            if not self.currentperiod.PGGS_sinistred:
+                self.currentperiod.PGGS_periodpayoff += \
+                    self.currentperiod.PGGS_indivaccountpayoff
         else:
             self.currentperiod.PGGS_groupaccountpayoff = \
                 self.currentperiod.PGGS_groupaccountsum * mpcr

@@ -49,26 +49,47 @@ def get_text_inequality():
     return text
 
 
-def get_histo_header(treatment, sinistred, vote):
-    h = [le2mtrans(u"Period"), trans_PGGS(u"Individual\naccount"),
-         trans_PGGS(u"Group\naccount"),
-         trans_PGGS(u"Total in\nthe group\naccount")]
+def get_histo(treatment, sinistred, vote):
+    histo = list()
+    histo.append((le2mtrans(u"Period"), "PGGS_period"))
+    histo.append((trans_PGGS(u"Individual\naccount"), "PGGS_indivaccount"))
+    histo.append((trans_PGGS(u"Group\naccount"), "PGGS_groupaccount"))
+
+    if treatment == pms.SOL_AUTO_CONDITIONAL or \
+    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
+        histo.append((trans_PGGS(u"Group\naccount\nshared"),
+                      "PGGS_groupaccountshare"))
+
+    histo.append((trans_PGGS(u"Total in\nthe group\naccount"),
+                 "PGGS_groupaccountsum"))
 
     if (treatment == pms.SOL_AUTO and sinistred) or \
-            (treatment == pms.SOL_VOTE and sinistred and
-                     vote == pms.IN_FAVOR):
-        h.append(trans_PGGS(u"Total in\nthe shared\ngroup account"))
+    (treatment == pms.SOL_VOTE and sinistred and vote == pms.IN_FAVOR) or \
+    treatment == pms.SOL_AUTO_CONDITIONAL or \
+    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
+        histo.append((trans_PGGS(u"Total in\nthe shared\ngroup account"),
+                      "PGGS_groupaccountsharedsum"))
 
-    h.extend([trans_PGGS(u"Payoff\nfrom\nindividual\naccount"),
-        trans_PGGS(u"Payoff\nfrom\ngroup\naccount")])
+    histo.append((trans_PGGS(u"Payoff\nfrom\nindividual\naccount"),
+                  "PGGS_indivaccountpayoff"))
+
+    if treatment == pms.BASELINE or treatment == pms.SOL_WITHOUT or \
+    treatment == pms.SOL_AUTO or treatment == pms.SOL_VOTE or \
+    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.AGAINST):
+        histo.append((trans_PGGS(u"Payoff\nfrom\ngroup\naccount"),
+                      "PGGS_groupaccountpayoff"))
 
     if (treatment == pms.SOL_AUTO and sinistred) or \
-            (treatment == pms.SOL_VOTE and sinistred and
-                     vote == pms.IN_FAVOR):
-        h.append(trans_PGGS(u"Payoff\nfrom the\nshared group\naccount"))
+    (treatment == pms.SOL_VOTE and sinistred and vote == pms.IN_FAVOR) or \
+    treatment == pms.SOL_AUTO_CONDITIONAL or \
+    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
+        histo.append((trans_PGGS(u"Payoff\nfrom the\nshared group\naccount"),
+                      "PGGS_groupaccountsharedpayoff"))
 
-    h.extend([le2mtrans(u"Period\npayoff"), le2mtrans(u"Cumulative\npayoff")])
-    return h
+    histo.append((le2mtrans(u"Period\npayoff"), "PGGS_periodpayoff"))
+    histo.append((le2mtrans(u"Cumulative\npayoff"), "PGGS_cumulativepayoff"))
+
+    return zip(*histo)  # return the_headers, the_vars
 
 
 def get_text_sinistred(sinistred):
@@ -79,7 +100,7 @@ def get_text_sinistred(sinistred):
 
 
 def get_text_vote():
-    txt = trans_PGGS(u"You must vote in favour of or againts the share of the "
+    txt = trans_PGGS(u"You must vote in favour of or against the share of the "
                      u"public account of your group with a sinistred group.")
     return txt
 
@@ -103,6 +124,7 @@ def get_text_explanation():
 
 
 def get_text_summary(period_content):
+    # todo: change the text depending on the treatment
     txt = trans_PGGS(u"You put") + \
           u" {} ".format(get_pluriel(period_content.get("PGGS_indivaccount"),
                                      trans_PGGS(u"token"))) + \

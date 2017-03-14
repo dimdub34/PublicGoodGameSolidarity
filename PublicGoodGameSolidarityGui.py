@@ -523,8 +523,8 @@ class DEffort(QtGui.QDialog):
             parent=self, text=texts_PGGS.get_text_explanation_grilles())
         layout.addWidget(explanation)
 
-        self._countdown = WCompterebours(self, temps=pms.TIME_TO_FILL_GRILLES,
-                                   actionfin=self._accept)
+        self._countdown = WCompterebours(
+            self, temps=pms.TIME_TO_FILL_GRILLES, actionfin=self._accept)
         layout.addWidget(self._countdown)
 
         grid_layout = QtGui.QGridLayout()
@@ -559,6 +559,8 @@ class DEffort(QtGui.QDialog):
                 QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes)
             if confirmation != QtGui.QMessageBox.Yes:
                 return
+            else:
+                self._countdown.stop()
         answers = sum([int(g.is_ok()) for g in self._widgets_grilles])
         if not self._automatique:
             QtGui.QMessageBox.information(

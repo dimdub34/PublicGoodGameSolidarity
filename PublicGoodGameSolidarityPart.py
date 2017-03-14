@@ -105,24 +105,67 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_decision(self):
         logger.debug(u"{} Decision".format(self.joueur))
+
+        # define the endowment of the subject, depending on the treatment
+        # and the result of the vote
         if not self.currentperiod.PGGS_sinistred:
             max_decision = pms.DECISION_MAX
         else:
-            if pms.TREATMENT == pms.SOL_VOTE or \
-            pms.TREATMENT == pms.SOL_AUTO:
+            if pms.TREATMENT == pms.SOL_WITHOUT or \
+            pms.TREATMENT == pms.SOL_VOTE or \
+            pms.TREATMENT == pms.SOL_AUTO or \
+            (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
+             self.votemajority == pms.AGAINST):
                 max_decision = 0
             else:
                 max_decision = self.currentperiod.PGGS_grids * \
                                pms.EFFORT_UNIT_VALUE
+
         debut = datetime.now()
-        self.currentperiod.PGGS_groupaccount = yield(self.remote.callRemote(
-            "display_decision", max_decision))
+
+        decision = yield(self.remote.callRemote(
+                "display_decision", max_decision))
+
+        # contribution to the collective account / shared or not ---------------
+        if pms.TREATMENT == pms.BASELINE or pms.TREATMENT == pms.SOL_WITHOUT or \
+        pms.TREATMENT == pms.SOL_AUTO or pms.TREATMENT == pms.SOL_VOTE:
+            self.currentperiod.PGGS_groupaccount = decision
+
+        else:
+            if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
+                if not self.sinistred:
+                    self.currentperiod.PGGS_groupaccount = decision
+                else:
+                    self.currentperiod.PGGS_groupaccountshared = decision
+
+            elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
+                if self.votemajority == pms.AGAINST:
+                    self.currentperiod.PGGS_groupaccount = decision
+                else:
+                    if not self.sinistred:
+                        self.currentperiod.PGGS_groupaccount = decision
+                    else:
+                        self.currentperiod.PGGS_groupaccountshared = decision
+
         self.currentperiod.PGGS_decisiontime = (datetime.now() - debut).seconds
+
+        # individual account ---------------------------------------------------
         if not self.sinistred:
             self.currentperiod.PGGS_indivaccount = \
                 pms.DECISION_MAX - self.currentperiod.PGGS_groupaccount
+
         else:
-            self.currentperiod.PGGS_indivaccount = 0
+            if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
+            (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
+            self.votemajority == pms.IN_FAVOR):
+                self.currentperiod.PGGS_indivaccount = \
+                self.currentperiod.PGGS_grids * pms.EFFORT_UNIT_VALUE - \
+                self.currentperiod.PGGS_groupaccountshared
+
+            else:
+                self.currentperiod.PGGS_indivaccount = 0
+
+        # ----------------------------------------------------------------------
         self.joueur.info(u"{}".format(self.currentperiod.PGGS_groupaccount))
         self.joueur.remove_waitmode()
 
@@ -133,29 +176,45 @@ class PartiePGGS(Partie):
         self.currentperiod.PGGS_indivaccountpayoff = \
             self.currentperiod.PGGS_indivaccount * 1
 
-        mpcr = pms.MPCR_NORM
-        if pms.TREATMENT == pms.SOL_AUTO or \
-            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
-                (pms.TREATMENT == pms.SOL_VOTE and
-                 self.currentperiod.PGGS_votemajority == pms.IN_FAVOR) or \
-                (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
-                 self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
-            mpcr = pms.MPCR_SOL
-            self.currentperiod.PGGS_groupaccountsharedpayoff = \
-                self.currentperiod.PGGS_groupaccountshared * mpcr
-            self.currentperiod.PGGS_periodpayoff = \
-                self.currentperiod.PGGS_groupaccountsharedpayoff
-            if not self.currentperiod.PGGS_sinistred:
-                self.currentperiod.PGGS_periodpayoff += \
-                    self.currentperiod.PGGS_indivaccountpayoff
-        else:
+        if pms.TREATMENT == pms.BASELINE or \
+         pms.TREATMENT == pms.SOL_WITHOUT or \
+         (pms.TREATMENT == pms.SOL_VOTE and self.votemajority == pms.AGAINST) or \
+         (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and self.votemajority == pms.AGAINST):
+
             self.currentperiod.PGGS_groupaccountpayoff = \
-                self.currentperiod.PGGS_groupaccountsum * mpcr
+                pms.MPCR_NORM * self.currentperiod.PGGS_groupaccountsum
+
             self.currentperiod.PGGS_periodpayoff = \
                 self.currentperiod.PGGS_indivaccountpayoff + \
                 self.currentperiod.PGGS_groupaccountpayoff
 
-        # cumulative payoff since the first period
+        elif pms.TREATMENT == pms.SOL_AUTO or \
+        (pms.TREATMENT == pms.SOL_VOTE and self.votemajority == pms.IN_FAVOR):
+
+                self.currentperiod.PGGS_groupaccountpayoff = \
+                    pms.MPCR_SOL * self.currentperiod.PGGS_groupaccountsum
+
+                self.currentperiod.PGGS_groupaccountsharedpayoff = \
+                    self.currentperiod.PGGS_groupaccountsharedsum * \
+                    pms.MPCR_SOL
+
+                self.currentperiod.PGGS_periodpayoff = \
+                    self.currentperiod.PGGS_indivaccountpayoff + \
+                    self.currentperiod.PGGS_groupaccountsharedpayoff
+
+        elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
+        (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
+         self.votemajority == pms.IN_FAVOR):
+
+            self.currentperiod.PGGS_groupaccountsharedpayoff = \
+                self.currentperiod.PGGS_groupaccountsharedsum * \
+                pms.MPCR_SOL
+
+            self.currentperiod.PGGS_periodpayoff = \
+                self.currentperiod.PGGS_indivaccountpayoff + \
+                self.currentperiod.PGGS_groupaccountsharedpayoff
+
+        # cumulative payoff since the first period -----------------------------
         if self.currentperiod.PGGS_period < 2:
             self.currentperiod.PGGS_cumulativepayoff = \
                 self.currentperiod.PGGS_periodpayoff
@@ -239,7 +298,6 @@ class PartiePGGS(Partie):
         self.joueur.remove_waitmode()
 
 
-
 class RepetitionsPGGS(Base):
     __tablename__ = 'partie_PublicGoodGameSolidarity_repetitions'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -255,10 +313,12 @@ class RepetitionsPGGS(Base):
     PGGS_vote = Column(Integer)  # 0=for, 1=against
     PGGS_voteforgroup = Column(Integer)  # nb of for
     PGGS_votemajority = Column(Integer)  # 0=for, 1=against
+    PGGS_grids = Column(Integer)
     PGGS_indivaccount = Column(Integer)
     PGGS_groupaccount = Column(Integer)
+    PGGS_groupaccountshared = Column(Integer)
     PGGS_groupaccountsum = Column(Integer)
-    PGGS_groupaccountshared = Column(Integer)  # total group account of non-sinistred paired group
+    PGGS_groupaccountsharedsum = Column(Integer)
     PGGS_decisiontime = Column(Integer)
     PGGS_indivaccountpayoff= Column(Integer)
     PGGS_groupaccountpayoff = Column(Float)
@@ -271,12 +331,16 @@ class RepetitionsPGGS(Base):
     PGGS_expectation = Column(Integer)
     PGGS_expectation_payoff = Column(Integer)
     PGGS_average_others = Column(Integer)
-    PGGS_grids = Column(Integer)
 
     def __init__(self, period):
         self.PGGS_treatment = pms.TREATMENT
         self.PGGS_period = period
         self.PGGS_decisiontime = 0
+        self.PGGS_indivaccount = 0
+        self.PGGS_groupaccount = 0
+        self.PGGS_groupaccountsum = 0
+        self.PGGS_groupaccountshared = 0
+        self.PGGS_groupaccountsharedsum = 0
         self.PGGS_indivaccountpayoff = 0
         self.PGGS_groupaccountpayoff = 0
         self.PGGS_groupaccountsharedpayoff = 0

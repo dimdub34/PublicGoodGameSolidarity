@@ -57,9 +57,8 @@ def get_grilles():
     for g in range(NB_GRILLES):
         somme, grille = 0, []
         while somme < (0.2 * SIZE_GRILLES**2) or somme > (0.8 * SIZE_GRILLES**2):
-            grille = np.array(
-                [[randint(0, 1) for _ in range(SIZE_GRILLES)]
-                 for _ in range(SIZE_GRILLES)], dtype=int)
+            grille = [[randint(0, 1) for _ in range(SIZE_GRILLES)]
+                      for _ in range(SIZE_GRILLES)]
             somme = np.sum(grille)
         grilles.append(grille)
     return grilles

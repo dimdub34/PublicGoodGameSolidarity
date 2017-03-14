@@ -61,9 +61,9 @@ class RemotePGGS(IRemote):
         self.currentperiod = periode
         if self.currentperiod == 1:
             del self.histo[:]
-            self._create_histo_vars()
-            self.histo.append(texts_PGGS.get_histo_header(
-                pms.TREATMENT, self._sinistred, self._majorityvote))
+            histo_headers, self._histo_vars = texts_PGGS.get_histo(
+                pms.TREATMENT, self._sinistred, self._majorityvote)
+            self.histo.append(histo_headers)
 
     def remote_display_decision(self, max_decision):
         """
@@ -102,7 +102,7 @@ class RemotePGGS(IRemote):
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
                 self.currentperiod, self.histo,
                 texts_PGGS.get_text_summary(period_content),
-                size_histo=(700, 100))
+                size_histo=(800, 120))
             ecran_recap.show()
             return defered
 
@@ -147,7 +147,7 @@ class RemotePGGS(IRemote):
         if self.le2mclt.simulation:
             answers = 0
             for i in range(len(grilles)):
-                answers += random.randint(0, 1)  # 1 if success, o otherwise
+                answers += random.randint(0, 1)  # 1 if success, 0 otherwise
             logger.info(u"{} send back {}".format(self.le2mclt.uid, answers))
             return answers
         else:
@@ -158,24 +158,24 @@ class RemotePGGS(IRemote):
             screen_effort.show()
             return defered
 
-    def _create_histo_vars(self):
-        self._histo_vars = ["PGGS_period", "PGGS_indivaccount",
-                            "PGGS_groupaccount", "PGGS_groupaccountsum"]
-
-        if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
-            or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
-                and self._majorityvote == pms.IN_FAVOR):
-            self._histo_vars.append("PGGS_groupaccountshared")
-
-        self._histo_vars.extend(["PGGS_indivaccountpayoff",
-
-                                 "PGGS_groupaccountpayoff"])
-        if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
-            or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
-                and self._majorityvote == pms.IN_FAVOR):
-            self._histo_vars.append("PGGS_groupaccountsharedpayoff")
-
-        self._histo_vars.extend(["PGGS_periodpayoff", "PGGS_cumulativepayoff"])
+    # def _create_histo_vars(self):
+    #     self._histo_vars = ["PGGS_period", "PGGS_indivaccount",
+    #                         "PGGS_groupaccount", "PGGS_groupaccountsum"]
+    #
+    #     if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
+    #         or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
+    #             and self._majorityvote == pms.IN_FAVOR):
+    #         self._histo_vars.append("PGGS_groupaccountshared")
+    #
+    #     self._histo_vars.extend(["PGGS_indivaccountpayoff",
+    #
+    #                              "PGGS_groupaccountpayoff"])
+    #     if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
+    #         or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
+    #             and self._majorityvote == pms.IN_FAVOR):
+    #         self._histo_vars.append("PGGS_groupaccountsharedpayoff")
+    #
+    #     self._histo_vars.extend(["PGGS_periodpayoff", "PGGS_cumulativepayoff"])
 
     def remote_display_questfinal(self):
         logger.info(u"{} display_questfinal".format(self._le2mclt.uid))

@@ -8,7 +8,8 @@ from client.cltgui.cltguidialogs import GuiRecapitulatif
 from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
 from PublicGoodGameSolidarityGui import (GuiDecision, DVote, DQuestFinalPGGS,
-                                         DExpectation, DEffort)
+                                         DExpectation, DEffort,
+                                         DExpectationBefore)
 import PublicGoodGameSolidarityTexts as texts_PGGS
 
 
@@ -127,19 +128,47 @@ class RemotePGGS(IRemote):
         """
         logger.debug(u"{} display_expectations".format(self.le2mclt.uid))
         if self.le2mclt.simulation:
-            expectation = \
-                random.randrange(
-                    pms.DECISION_MIN, pms.DECISION_MAX + pms.DECISION_STEP,
-                    pms.DECISION_STEP)
+            expectation = random.randrange(
+            pms.DECISION_MIN, pms.DECISION_MAX + pms.DECISION_STEP,
+            pms.DECISION_STEP)
             logger.info(u"{} Send back {}".format(self.le2mclt.uid, expectation))
             return expectation
         else:
-            text_expectation = texts_PGGS.get_text_expectation(self.currentperiod)
+            text_expectation = texts_PGGS.get_text_expectation()
             defered = defer.Deferred()
             screen_expectation = DExpectation(
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
                 text_expectation)
             screen_expectation.show()
+            return defered
+
+    def remote_display_expectations_vote(self, before_vote=True,
+                                        expectation_before=None):
+        def get_random():
+            return random.randrange(
+            pms.DECISION_MIN, pms.DECISION_MAX + pms.DECISION_STEP,
+            pms.DECISION_STEP)
+
+        if self.le2mclt.simulation:
+            if before_vote:
+                expectation = (get_random(), get_random())
+            else:
+                expectation = get_random()
+            logger.info(u"{} Send back {}".format(self.le2mclt.uid, expectation))
+            return expectation
+
+        else:
+            defered = defer.Deferred()
+            if before_vote:
+                txt = texts_PGGS.get_text_expectation_before()
+                screen = DExpectationBefore(
+                    defer, self.le2mclt.automatique, self.le2mclt.screen, txt)
+            else:
+                txt = texts_PGGS.get_text_expectation(expectation_before)
+                screen = DExpectation(
+                    defered, self.le2mclt.automatique, self.le2mclt.screen,
+                    txt)
+            screen.show()
             return defered
 
     def remote_display_effort(self, grilles):
@@ -157,25 +186,6 @@ class RemotePGGS(IRemote):
                 grilles)
             screen_effort.show()
             return defered
-
-    # def _create_histo_vars(self):
-    #     self._histo_vars = ["PGGS_period", "PGGS_indivaccount",
-    #                         "PGGS_groupaccount", "PGGS_groupaccountsum"]
-    #
-    #     if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
-    #         or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
-    #             and self._majorityvote == pms.IN_FAVOR):
-    #         self._histo_vars.append("PGGS_groupaccountshared")
-    #
-    #     self._histo_vars.extend(["PGGS_indivaccountpayoff",
-    #
-    #                              "PGGS_groupaccountpayoff"])
-    #     if (pms.TREATMENT == pms.SOL_AUTO and self._sinistred) \
-    #         or (pms.TREATMENT == pms.SOL_VOTE and self._sinistred
-    #             and self._majorityvote == pms.IN_FAVOR):
-    #         self._histo_vars.append("PGGS_groupaccountsharedpayoff")
-    #
-    #     self._histo_vars.extend(["PGGS_periodpayoff", "PGGS_cumulativepayoff"])
 
     def remote_display_questfinal(self):
         logger.info(u"{} display_questfinal".format(self._le2mclt.uid))

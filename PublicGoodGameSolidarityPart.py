@@ -275,11 +275,46 @@ class PartiePGGS(Partie):
         self.joueur.remove_waitmode()
 
     @defer.inlineCallbacks
-    def display_expectations(self):
+    def display_expectations(self, before_vote=False, after_vote=False):
         logger.debug(u"{} display_expectation".format(self.joueur))
-        self.currentperiod.PGGS_expectation = yield (
-            self.remote.callRemote("display_expectations"))
-        self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
+        expectation = yield (self.remote.callRemote("display_expectations",
+                                       before_vote, after_vote))
+        if before_vote:
+            self.currentperiod.PGGS_expectation_before_vote_favor = \
+                expectation[0]
+            self.currentperiod.PGGS_expectation_before_vote_against = \
+                expectation[1]
+            self.joueur.info(u"{}, {}".format(*expectation))
+        else:
+            if after_vote:
+                self.currentperiod.PGGS_expectation_after_vote = expectation
+            else:
+                self.currentperiod.PGGS_expectation = expectation
+            self.joueur.info(u"{}".format(expectation))
+        self.joueur.remove_waitmode()
+
+    @defer.inlineCallbacks
+    def display_expectations_vote(self, before_vote=True):
+
+        if before_vote:
+
+            favor, against = yield (self.remote.callRemote(
+                "display_expectations_vote", before_vote))
+            self.currentperiod.PGGS_expectation_before_vote_favor = favor
+            self.currentperiod.PGGS_expectation_before_vote_against = against
+            self.joueur.info(u"{}, {}".format(favor, against))
+
+        else:
+
+            expec_before = \
+            self.currentperiod.PGGS_expectation_before_vote_favor if \
+                self.votemajority == pms.IN_FAVOR else \
+                self.currentperiod.PGGS_expectation_before_vote_against
+            self.currentperiod.PGGS_expectation = yield(
+                self.remote.callRemote("display_expectations_vote", False,
+                                       expec_before))
+            self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
+
         self.joueur.remove_waitmode()
 
     @defer.inlineCallbacks
@@ -318,6 +353,7 @@ class RepetitionsPGGS(Base):
     PGGS_groupaccount = Column(Integer)
     PGGS_groupaccountshared = Column(Integer)
     PGGS_groupaccountsum = Column(Integer)
+    PGGS_groupaccountsharedsinistredsum = Column(Integer)  # sum put by sinistred in the group account shared
     PGGS_groupaccountsharedsum = Column(Integer)
     PGGS_decisiontime = Column(Integer)
     PGGS_indivaccountpayoff= Column(Integer)
@@ -328,6 +364,9 @@ class RepetitionsPGGS(Base):
     PGGS_politics = Column(Integer)
     PGGS_risk = Column(Integer)
     PGGS_inequality = Column(Integer)
+    PGGS_expectation_before_vote_favor = Column(Integer)
+    PGGS_expectation_before_vote_against = Column(Integer)
+    PGGS_expectation_after_vote = Column(Integer)
     PGGS_expectation = Column(Integer)
     PGGS_expectation_payoff = Column(Integer)
     PGGS_average_others = Column(Integer)
@@ -340,6 +379,7 @@ class RepetitionsPGGS(Base):
         self.PGGS_groupaccount = 0
         self.PGGS_groupaccountsum = 0
         self.PGGS_groupaccountshared = 0
+        self.PGGS_groupaccountsharedsinistredsum = 0
         self.PGGS_groupaccountsharedsum = 0
         self.PGGS_indivaccountpayoff = 0
         self.PGGS_groupaccountpayoff = 0

@@ -404,7 +404,7 @@ class DSequenceChoice(QtGui.QDialog):
 
 
 class DExpectation(QtGui.QDialog):
-    def __init__(self, defered, automatique, parent, text):
+    def __init__(self, defered, automatique, parent, text, expec_before=None):
         QtGui.QDialog.__init__(self, parent)
 
         self._defered = defered
@@ -413,10 +413,15 @@ class DExpectation(QtGui.QDialog):
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
 
+        explanation = WExplication(text=text[0])
+        layout.addWidget(explanation)
+
         self._spin_expectation = WSpinbox(
             parent=self, minimum=pms.DECISION_MIN, maximum=pms.DECISION_MAX,
-            interval=pms.DECISION_STEP, label=text,
+            interval=pms.DECISION_STEP, label=text[1],
             automatique=self._automatique)
+        if expec_before is not None:
+            self._spin_expectation.ui.spinBox.setValue(expec_before)
         layout.addWidget(self._spin_expectation)
 
         button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
@@ -450,6 +455,70 @@ class DExpectation(QtGui.QDialog):
         logger.info(le2mtrans(u"Send back {}".format(expectation)))
         self.accept()
         self._defered.callback(expectation)
+
+
+class DExpectationBefore(QtGui.QDialog):
+    def __init__(self, defered, automatique, parent, text):
+        QtGui.QDialog.__init__(self, parent)
+
+        self._defered = defered
+        self._automatique = automatique
+
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
+
+        explanation = WExplication(text[0])
+        layout.addWidget(explanation)
+
+        form_layout = QtGui.QFormLayout()
+        layout.addLayout(form_layout)
+
+        self._spin_expectation_favor = QtGui.QSpinBox()
+        self._spin_expectation_favor.setMinimum(pms.DECISION_MIN)
+        self._spin_expectation_favor.setMaximum(pms.DECISION_MAX)
+        self._spin_expectation_favor.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        form_layout.addRow(QtGui.QLabel(text[1]), self._spin_expectation_favor)
+        
+        self._spin_expectation_against = QtGui.QSpinBox()
+        self._spin_expectation_against.setMinimum(pms.DECISION_MIN)
+        self._spin_expectation_against.setMaximum(pms.DECISION_MAX)
+        self._spin_expectation_against.setButtonSymbols(QtGui.QSpinBox.NoButtons)
+        form_layout.addRow(QtGui.QLabel(text[2]), self._spin_expectation_against)
+
+        button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
+        button.accepted.connect(self._accept)
+        layout.addWidget(button)
+
+        self.setWindowTitle(trans_PGGS(u"Expectations"))
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
+        if self._automatique:
+            self._spin_expectation_favor.setValue(randint(0, pms.DECISION_MAX))
+            self._spin_expectation_against.setValue(randint(0, pms.DECISION_MAX))
+            self._timer = QtCore.QTimer()
+            self._timer.timeout.connect(self._accept)
+            self._timer.start(7000)
+
+    def reject(self):
+        pass
+
+    def _accept(self):
+        try:
+            self._timer.stop()
+        except AttributeError:
+            pass
+        expectations = (self._spin_expectation_favor.value(),
+                        self._spin_expectation_against.value())
+        if not self._automatique:
+            confirm = QtGui.QMessageBox.question(
+                self, u"Confirmation", le2mtrans(u"Do you confirm your choice?"),
+                QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
+            if confirm != QtGui.QMessageBox.Yes:
+                return
+        logger.info(le2mtrans(u"Send back {}".format(expectations)))
+        self.accept()
+        self._defered.callback(expectations)
 
 
 class WGrille(QtGui.QWidget):
@@ -573,7 +642,10 @@ class DEffort(QtGui.QDialog):
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    grilles = pms.get_grilles()
-    screen = DEffort(None, False, None, grilles)
+    # grilles = pms.get_grilles()
+    # screen = DEffort(None, False, None, grilles)
+    text = texts_PGGS.get_text_expectation(expectation_before=5)
+    # screen = DExpectationBefore(None, False, None, text)
+    screen = DExpectation(None, False, None, text, 5)
     screen.show()
     sys.exit(app.exec_())

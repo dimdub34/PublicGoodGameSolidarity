@@ -29,8 +29,8 @@ class Serveur(object):
             display_information2(
                 utiltools.get_module_info(pms), le2mtrans(u"Parameters"))
         actions[le2mtrans(u"Start")] = lambda _: self._demarrer()
-        actions[trans_PGGS(u"Display expectations")] = \
-            lambda _: self._display_expectations()
+        # actions[trans_PGGS(u"Display expectations")] = \
+        #     lambda _: self._display_expectations()
         actions[le2mtrans(u"Display payoffs")] = self._display_payoffs
 
         self._le2mserv.gestionnaire_graphique.add_topartmenu(
@@ -123,76 +123,6 @@ class Serveur(object):
             self._le2mserv.gestionnaire_joueurs.get_players(),
             pms.TAILLE_GROUPES, forcer_nouveaux=False)
 
-        # Sinistre =============================================================
-        if pms.TREATMENT == pms.SOL_WITHOUT or \
-            pms.TREATMENT == pms.SOL_AUTO or \
-            pms.TREATMENT == pms.SOL_VOTE or \
-            pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
-            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
-
-            groups_keys = self._le2mserv.gestionnaire_groupes.get_groupes(
-                "PublicGoodGameSolidarity").keys()
-
-            # the first ones are not sinistred, the seconds ones are
-            groups_pairs = zip(
-                groups_keys[:len(groups_keys)//2],
-                groups_keys[len(groups_keys) // 2:])
-
-            # display on server list
-            self._le2mserv.gestionnaire_graphique.infoserv(
-                u"Group pairs (not sinistred, sinistred)")
-            for notsin, sin in groups_pairs:
-                self._le2mserv.gestionnaire_graphique.infoserv(
-                    u"G" + group_format(notsin) + u"- G" + group_format(sin))
-
-            # set sinistred or not in players' data
-            self._not_sinistred_players = list()
-            self._sinistred_players = list()
-            for notsin, sin in groups_pairs:
-                self._not_sinistred_players.extend(get_group_players(notsin))
-                self._sinistred_players.extend(get_group_players(sin))
-            for j in self._not_sinistred_players:
-                j.sinistred = False
-            for j in self._sinistred_players:
-                j.sinistred = True
-
-            yield (self._le2mserv.gestionnaire_experience.run_step(
-                trans_PGGS(u"Information sinistre"), self._tous,
-                "display_infosinistre"))
-
-            # vote =============================================================
-            if pms.TREATMENT == pms.SOL_VOTE or \
-                            pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
-                yield (self._le2mserv.gestionnaire_experience.run_step(
-                    trans_PGGS(u"Vote"), self._not_sinistred_players,
-                    "display_vote"))
-
-                # result of the vote
-                for notsin, sin in groups_pairs:
-                    notsin_p = get_group_players(notsin)
-                    sin_p = get_group_players(sin)
-                    votes_for = pms.TAILLE_GROUPES - \
-                               sum([j.vote for j in notsin_p])
-                    vote_majority = pms.IN_FAVOR if \
-                        votes_for > pms.TAILLE_GROUPES / 2 else \
-                        pms.AGAINST
-                    for j in notsin_p:
-                        j.set_votes(votesfor=votes_for,
-                                    votemajority=vote_majority)
-                    for j in sin_p:
-                        j.set_votes(votesfor=votes_for,
-                                    votemajority=vote_majority)
-                    # display on server list
-                    self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{}: {}".format(
-                            group_format(notsin),
-                            text_PGGS.VOTES.get(vote_majority)))
-
-                # display info vote
-                yield (self._le2mserv.gestionnaire_experience.run_step(
-                    trans_PGGS(u"Info vote"), self._tous,
-                    "display_infovote"))
-
         # Start ================================================================
         for period in range(1 if pms.NOMBRE_PERIODES else 0,
                         pms.NOMBRE_PERIODES + 1):
@@ -209,17 +139,86 @@ class Serveur(object):
             yield (self._le2mserv.gestionnaire_experience.run_func(
                 self._tous, "newperiod", period))
 
+            # SINISTRE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            if period == 1 and pms.TREATMENT != pms.BASELINE:
+
+                # the first ones are not sinistred, the seconds ones are
+                groups_keys = self._le2mserv.gestionnaire_groupes.\
+                    get_groupes("PublicGoodGameSolidarity").keys()
+                groups_pairs = zip(
+                    groups_keys[:len(groups_keys) // 2],
+                    groups_keys[len(groups_keys) // 2:])
+                self._le2mserv.gestionnaire_graphique.infoserv(
+                    u"Group pairs (not sinistred, sinistred)")
+                for notsin, sin in groups_pairs:
+                    self._le2mserv.gestionnaire_graphique.infoserv(
+                        u"G" + group_format(notsin) + u"- G" + group_format(
+                            sin))
+
+                # set sinistred or not in players' data
+                self._not_sinistred_players = list()
+                self._sinistred_players = list()
+                for notsin, sin in groups_pairs:
+                    self._not_sinistred_players.extend(
+                        get_group_players(notsin))
+                    self._sinistred_players.extend(get_group_players(sin))
+                for j in self._not_sinistred_players:
+                    j.sinistred = False
+                for j in self._sinistred_players:
+                    j.sinistred = True
+
+                # display
+                yield (self._le2mserv.gestionnaire_experience.run_step(
+                    trans_PGGS(u"Information sinistre"), self._tous,
+                    "display_infosinistre"))
+
+                # vote ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                if pms.TREATMENT == pms.SOL_VOTE or \
+                pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
+
+                    # expectation before the vote
+                    if pms.EXPECTATIONS:
+                        yield (self._le2mserv.gestionnaire_experience.run_step(
+                            trans_PGGS(u"Expectations"), self._tous,
+                            "display_expectations_vote", before_vote=True))
+
+                    yield (self._le2mserv.gestionnaire_experience.run_step(
+                        trans_PGGS(u"Vote"), self._not_sinistred_players,
+                        "display_vote"))
+
+                    # result of the vote
+                    for notsin, sin in groups_pairs:
+                        notsin_p = get_group_players(notsin)
+                        sin_p = get_group_players(sin)
+                        votes_for = pms.TAILLE_GROUPES - \
+                                    sum([j.vote for j in notsin_p])
+                        vote_majority = pms.IN_FAVOR if \
+                            votes_for > pms.TAILLE_GROUPES / 2 else \
+                            pms.AGAINST
+                        for j in notsin_p + sin_p:
+                            j.set_votes(votesfor=votes_for,
+                                        votemajority=vote_majority)
+                        self._le2mserv.gestionnaire_graphique.infoserv(
+                            u"G{}: {}".format(
+                                group_format(notsin),
+                                text_PGGS.VOTES.get(vote_majority)))
+
+                    # display info vote
+                    yield (self._le2mserv.gestionnaire_experience.run_step(
+                        trans_PGGS(u"Info vote"), self._tous,
+                        "display_infovote"))
+
             # expectation ------------------------------------------------------
             if pms.EXPECTATIONS and period in pms.EXPECTATIONS_PERIODS:
-                yield (self._le2mserv.gestionnaire_experience.run_step(
-                    trans_PGGS(u"Expectations"), self._tous,
-                    "display_expectations"))
-                for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
-                        "PublicGoodGameSolidarity").viewitems():
-                    group_expectation = \
-                        sum([j.currentperiod.PGGS_expectation for j in m])
-                    self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{}: {}".format(group_format(g), group_expectation))
+                if pms.TREATMENT == pms.SOL_VOTE or \
+                pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
+                    yield (self._le2mserv.gestionnaire_experience.run_step(
+                        trans_PGGS(u"Expectations"), self._tous,
+                        "display_expectations_vote", before_vote=False))
+                else:
+                    yield (self._le2mserv.gestionnaire_experience.run_step(
+                        trans_PGGS(u"Expectations"), self._tous,
+                        "display_expectations"))
 
             # EFFORT -----------------------------------------------------------
             if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
@@ -269,28 +268,6 @@ class Serveur(object):
                         u"G{} - G{}: {}".format(group_format(
                             notsin), group_format(sin), notsin_group_contrib))
 
-            elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
-                # the groupaccountsharedsum is equal to the sum of the
-                # groupaccountsum of the non-sinistred group + the
-                # sum of the groupaccountshared of the sinistred players
-                self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
-                for notsin, sin in groups_pairs:
-                    # get the players
-                    notsin_p = get_group_players(notsin)
-                    sin_p = get_group_players(sin)
-                    # get the groupaccountsum of non-sinistred group
-                    notsin_group_contrib = \
-                        notsin_p[0].currentperiod.PGGS_groupaccountsum
-                    sin_group_effort = sum(
-                        [j.currentperiod.PGGS_groupaccountshared for j in sin_p])
-                    for j in notsin_p + sin_p:
-                        j.currentperiod.PGGS_groupaccountsharedsum = \
-                        notsin_group_contrib + sin_group_effort
-                    self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{} - G{}: {}".format(group_format(
-                            notsin), group_format(sin),
-                            notsin_group_contrib + sin_group_effort))
-
             elif pms.TREATMENT == pms.SOL_VOTE:
                 # if vote in favor then this is as in sol_auto
                 self._le2mserv.gestionnaire_graphique.infoserv(
@@ -312,6 +289,31 @@ class Serveur(object):
                             u"G{} - G{}: {}".format(group_format(
                                 notsin), group_format(sin), notsin_group_contrib))
 
+            elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
+                # the groupaccountsharedsum is equal to the sum of the
+                # groupaccountsum of the non-sinistred group + the
+                # sum of the groupaccountshared of the sinistred players
+                self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
+                for notsin, sin in groups_pairs:
+                    # get the players
+                    notsin_p = get_group_players(notsin)
+                    sin_p = get_group_players(sin)
+                    # get the groupaccountsum of non-sinistred group
+                    notsin_group_contrib = \
+                        notsin_p[0].currentperiod.PGGS_groupaccountsum
+                    sin_group_effort = sum(
+                        [j.currentperiod.PGGS_groupaccountshared for j in sin_p])
+                    for j in sin_p:
+                        j.currentperiod.PGGS_groupaccountsharedsinistredsum = \
+                        sin_group_effort
+                    for j in notsin_p + sin_p:
+                        j.currentperiod.PGGS_groupaccountsharedsum = \
+                        notsin_group_contrib + sin_group_effort
+                    self._le2mserv.gestionnaire_graphique.infoserv(
+                        u"G{} - G{}: {}".format(group_format(
+                            notsin), group_format(sin),
+                            notsin_group_contrib + sin_group_effort))
+
             elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                 # if vote in favor then this is as in sol_auto_conditional
                 self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
@@ -325,6 +327,9 @@ class Serveur(object):
                             notsin_p[0].currentperiod.PGGS_groupaccountsum
                         sin_group_effort = sum(
                             [j.currentperiod.PGGS_groupaccountshared for j in sin_p])
+                        for j in sin_p:
+                            j.currentperiod.PGGS_groupaccountsharedsinistredsum = \
+                                sin_group_effort
                         for j in notsin_p + sin_p:
                             j.currentperiod.PGGS_groupaccountsharedsum = \
                             notsin_group_contrib + sin_group_effort
@@ -398,35 +403,4 @@ class Serveur(object):
             trans_PGGS(u"Final questionnaire"), self._tous,
             "display_questfinal"))
 
-    @defer.inlineCallbacks
-    def _display_expectations(self):
-        if not self._le2mserv.gestionnaire_base.is_created():
-            QtGui.QMessageBox.warning(
-                self._le2mserv.gestionnaire_graphique.screen,
-                le2mtrans(u"Warning"),
-                le2mtrans(u"There is no database yet. You first need to "
-                          u"load at least one part."))
-            return
-        if not hasattr(self, "_tous"):
-            QtGui.QMessageBox.warning(
-                self._le2mserv.gestionnaire_graphique.screen,
-                le2mtrans(u"Warning"),
-                trans_PGGS(u"PGGS has to be run before to "
-                         u"start this expectation step"))
-            return
-        confirmation = QtGui.QMessageBox.question(
-            self._le2mserv.gestionnaire_graphique.screen,
-            le2mtrans(u"Confirmation"),
-            le2mtrans(u"Display the expectation screen on clients?"),
-            QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
-        if confirmation != QtGui.QMessageBox.Ok:
-            return
-        yield (self._le2mserv.gestionnaire_experience.run_step(
-            trans_PGGS(u"Expectations"), self._tous,
-            "display_expectations"))
-        for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
-                "PublicGoodGameSolidarity").viewitems():
-            group_expectation = \
-                sum([j.currentperiod.PGGS_expectation for j in m])
-            self._le2mserv.gestionnaire_graphique.infoserv(
-                u"G{}: {}".format(g.split("_")[2], group_expectation))
+

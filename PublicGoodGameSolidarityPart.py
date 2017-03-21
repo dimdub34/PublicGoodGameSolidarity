@@ -45,6 +45,8 @@ class PartiePGGS(Partie):
     def set_votes(self, votesfor, votemajority):
         self._votesfor = votesfor
         self._votemajority = votemajority
+        self.currentperiod.PGGS_voteforgroup = self._votesfor
+        self.currentperiod.PGGS_votemajority = self._votemajority
 
     @property
     def votemajority(self):
@@ -275,37 +277,26 @@ class PartiePGGS(Partie):
         self.joueur.remove_waitmode()
 
     @defer.inlineCallbacks
-    def display_expectations(self, before_vote=False, after_vote=False):
+    def display_expectations(self):
+        """
+        Expectations, except for treatments with a vote step
+        :return:
+        """
         logger.debug(u"{} display_expectation".format(self.joueur))
-        expectation = yield (self.remote.callRemote("display_expectations",
-                                       before_vote, after_vote))
-        if before_vote:
-            self.currentperiod.PGGS_expectation_before_vote_favor = \
-                expectation[0]
-            self.currentperiod.PGGS_expectation_before_vote_against = \
-                expectation[1]
-            self.joueur.info(u"{}, {}".format(*expectation))
-        else:
-            if after_vote:
-                self.currentperiod.PGGS_expectation_after_vote = expectation
-            else:
-                self.currentperiod.PGGS_expectation = expectation
-            self.joueur.info(u"{}".format(expectation))
+        self.currentperiod.PGGS_expectation = \
+            yield (self.remote.callRemote("display_expectations"))
+        self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
         self.joueur.remove_waitmode()
 
     @defer.inlineCallbacks
     def display_expectations_vote(self, before_vote=True):
-
         if before_vote:
-
             favor, against = yield (self.remote.callRemote(
                 "display_expectations_vote", before_vote))
             self.currentperiod.PGGS_expectation_before_vote_favor = favor
             self.currentperiod.PGGS_expectation_before_vote_against = against
             self.joueur.info(u"{}, {}".format(favor, against))
-
         else:
-
             expec_before = \
             self.currentperiod.PGGS_expectation_before_vote_favor if \
                 self.votemajority == pms.IN_FAVOR else \
@@ -314,7 +305,19 @@ class PartiePGGS(Partie):
                 self.remote.callRemote("display_expectations_vote", False,
                                        expec_before))
             self.joueur.info(u"{}".format(self.currentperiod.PGGS_expectation))
+        self.joueur.remove_waitmode()
 
+    def compute_expectations_payoffs(self):
+        logger.debug(u"{} compute_expectations_payoffs".format(self.joueur))
+        self.currentperiod.PGGS_average_others = \
+            int((self.currentperiod.PGGS_groupaccountsum -
+             self.currentperiod.PGGS_groupaccount) / (pms.TAILLE_GROUPES - 1))
+        self.currentperiod.PGGS_expectation_payoff = \
+            pms.get_payoff_expectation(
+                self.currentperiod.PGGS_expectation,
+                self.currentperiod.PGGS_average_others)
+        self.joueur.info(u"{}".format(
+            self.currentperiod.PGGS_expectation_payoff))
         self.joueur.remove_waitmode()
 
     @defer.inlineCallbacks
@@ -366,7 +369,7 @@ class RepetitionsPGGS(Base):
     PGGS_inequality = Column(Integer)
     PGGS_expectation_before_vote_favor = Column(Integer)
     PGGS_expectation_before_vote_against = Column(Integer)
-    PGGS_expectation_after_vote = Column(Integer)
+    # PGGS_expectation_after_vote = Column(Integer)
     PGGS_expectation = Column(Integer)
     PGGS_expectation_payoff = Column(Integer)
     PGGS_average_others = Column(Integer)

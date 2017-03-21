@@ -164,8 +164,10 @@ class Serveur(object):
                     self._sinistred_players.extend(get_group_players(sin))
                 for j in self._not_sinistred_players:
                     j.sinistred = False
+                    j.currentperiod.PGGS_sinistred = j.sinistred
                 for j in self._sinistred_players:
                     j.sinistred = True
+                    j.currentperiod.PGGS_sinistred = j.sinistred
 
                 # display
                 yield (self._le2mserv.gestionnaire_experience.run_step(
@@ -179,7 +181,8 @@ class Serveur(object):
                     # expectation before the vote
                     if pms.EXPECTATIONS:
                         yield (self._le2mserv.gestionnaire_experience.run_step(
-                            trans_PGGS(u"Expectations"), self._tous,
+                            trans_PGGS(u"Expectations"),
+                            self._not_sinistred_players,
                             "display_expectations_vote", before_vote=True))
 
                     yield (self._le2mserv.gestionnaire_experience.run_step(
@@ -209,15 +212,17 @@ class Serveur(object):
                         "display_infovote"))
 
             # expectation ------------------------------------------------------
-            if pms.EXPECTATIONS and period in pms.EXPECTATIONS_PERIODS:
+            if period == 1 and pms.EXPECTATIONS:
                 if pms.TREATMENT == pms.SOL_VOTE or \
                 pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                     yield (self._le2mserv.gestionnaire_experience.run_step(
-                        trans_PGGS(u"Expectations"), self._tous,
+                        trans_PGGS(u"Expectations"), self._not_sinistred_players,
                         "display_expectations_vote", before_vote=False))
                 else:
+                    who = self._not_sinistred_players if \
+                        pms.TREATMENT != pms.BASELINE else self._tous
                     yield (self._le2mserv.gestionnaire_experience.run_step(
-                        trans_PGGS(u"Expectations"), self._tous,
+                        trans_PGGS(u"Expectations"), who,
                         "display_expectations"))
 
             # EFFORT -----------------------------------------------------------
@@ -240,7 +245,7 @@ class Serveur(object):
                 le2mtrans(u"Decision"), self._tous, "display_decision"))
 
             for g, m in self._le2mserv.gestionnaire_groupes.get_groupes(
-                    "PublicGoodGameSolidarity").viewitems():
+                    "PublicGoodGameSolidarity").items():
                 group_contrib = sum(
                     [j.currentperiod.PGGS_groupaccount for j in m])
                 self._le2mserv.gestionnaire_graphique.infoserv(
@@ -270,8 +275,7 @@ class Serveur(object):
 
             elif pms.TREATMENT == pms.SOL_VOTE:
                 # if vote in favor then this is as in sol_auto
-                self._le2mserv.gestionnaire_graphique.infoserv(
-                    u"Shared account")
+                txt_serveur_list = []
                 for notsin, sin in groups_pairs:
                     # get the players
                     notsin_p = get_group_players(notsin)
@@ -285,9 +289,13 @@ class Serveur(object):
                         for j in notsin_p + sin_p:
                             j.currentperiod.PGGS_groupaccountsharedsum = \
                                 notsin_group_contrib
-                        self._le2mserv.gestionnaire_graphique.infoserv(
-                            u"G{} - G{}: {}".format(group_format(
-                                notsin), group_format(sin), notsin_group_contrib))
+                        txt_serveur_list.append(u"G{} - G{}: {}".format(
+                            group_format(notsin), group_format(sin),
+                            notsin_group_contrib))
+                if txt_serveur_list:
+                    txt_serveur_list.insert(0, u"Shared account")
+                    self._le2mserv.gestionnaire_graphique.infoserv(
+                        txt_serveur_list)
 
             elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
                 # the groupaccountsharedsum is equal to the sum of the
@@ -316,7 +324,7 @@ class Serveur(object):
 
             elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
                 # if vote in favor then this is as in sol_auto_conditional
-                self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
+                txt_serveur_list = []
                 for notsin, sin in groups_pairs:
                     # get the players
                     notsin_p = get_group_players(notsin)
@@ -333,22 +341,21 @@ class Serveur(object):
                         for j in notsin_p + sin_p:
                             j.currentperiod.PGGS_groupaccountsharedsum = \
                             notsin_group_contrib + sin_group_effort
-                        self._le2mserv.gestionnaire_graphique.infoserv(
-                            u"G{} - G{}: {}".format(group_format(
-                                notsin), group_format(sin),
-                                notsin_group_contrib + sin_group_effort))
+                        txt_serveur_list.append(u"G{} - G{}: {}".format(
+                            group_format(notsin), group_format(sin),
+                            notsin_group_contrib + sin_group_effort))
+                if txt_serveur_list:
+                    txt_serveur_list.insert(0, u"Shared account")
+                self._le2mserv.gestionnaire_graphique.infoserv(txt_serveur_list)
 
-            # compute difference between expectations and realisations
-            if pms.EXPECTATIONS and period in pms.EXPECTATIONS_PERIODS:
-                for j in self._tous:
-                    j.currentperiod.PGGS_average_others = \
-                        (j.currentperiod.PGGS_groupaccountsum -
-                        j.currentperiod.PGGS_groupaccount) / \
-                        (pms.TAILLE_GROUPES - 1)
-                    j.currentperiod.PGGS_expectation_payoff = \
-                        pms.get_payoff_expectation(
-                            j.currentperiod.PGGS_expectation,
-                            j.currentperiod.PGGS_average_others)
+            # compute difference between expectations and realisations ---------
+            if period == 1 and pms.EXPECTATIONS:
+                self._le2mserv.gestionnaire_graphique.infoclt(
+                    u"EXPECTATION PAYOFFS")
+                who = self._not_sinistred_players if \
+                    pms.TREATMENT != pms.BASELINE else self._tous
+                yield (self._le2mserv.gestionnaire_experience.run_func(
+                 who, "compute_expectations_payoffs"))
 
             # period payoffs ---------------------------------------------------
             self._le2mserv.gestionnaire_experience.compute_periodpayoffs(

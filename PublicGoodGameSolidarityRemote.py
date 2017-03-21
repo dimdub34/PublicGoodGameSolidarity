@@ -151,7 +151,10 @@ class RemotePGGS(IRemote):
 
         if self.le2mclt.simulation:
             if before_vote:
-                expectation = (get_random(), get_random())
+                if random.randint(0, 1):
+                    expectation = expectation_before
+                else:
+                    expectation = (get_random(), get_random())
             else:
                 expectation = get_random()
             logger.info(u"{} Send back {}".format(self.le2mclt.uid, expectation))

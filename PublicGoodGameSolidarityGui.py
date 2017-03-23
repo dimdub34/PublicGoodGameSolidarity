@@ -16,6 +16,8 @@ from client.cltgui.cltguiwidgets import (WExplication, WCombo, WSpinbox,
 import PublicGoodGameSolidarityTexts as texts_PGGS
 from PublicGoodGameSolidarityTexts import trans_PGGS
 
+HISTO_WIDTH = 1000
+
 
 logger = logging.getLogger("le2m")
 
@@ -28,7 +30,8 @@ class GuiDecision(QtGui.QDialog):
         # variables
         self._defered = defered
         self._automatique = automatique
-        self._historique = GuiHistorique(self, historique, size=(700, 500))
+        self._historique = GuiHistorique(self, historique,
+                                         size=(HISTO_WIDTH, 500))
         self._max_decision = max_decision
 
         layout = QtGui.QVBoxLayout(self)
@@ -39,7 +42,8 @@ class GuiDecision(QtGui.QDialog):
         layout.addWidget(wperiod)
 
         wexplanation = WExplication(
-            text=texts_PGGS.get_text_explanation(), parent=self, size=(500, 60))
+            text=texts_PGGS.get_text_explanation(), parent=self,
+            size=(HISTO_WIDTH, 60))
         layout.addWidget(wexplanation)
 
         self._wcontrib = WSpinbox(

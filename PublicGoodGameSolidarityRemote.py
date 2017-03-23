@@ -9,7 +9,7 @@ from client.clttexts import get_payoff_text
 import PublicGoodGameSolidarityParams as pms
 from PublicGoodGameSolidarityGui import (GuiDecision, DVote, DQuestFinalPGGS,
                                          DExpectation, DEffort,
-                                         DExpectationBefore)
+                                         DExpectationBefore, HISTO_WIDTH)
 import PublicGoodGameSolidarityTexts as texts_PGGS
 
 
@@ -103,7 +103,7 @@ class RemotePGGS(IRemote):
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
                 self.currentperiod, self.histo,
                 texts_PGGS.get_text_summary(period_content),
-                size_histo=(800, 120))
+                size_histo=(HISTO_WIDTH, 120))
             ecran_recap.show()
             return defered
 

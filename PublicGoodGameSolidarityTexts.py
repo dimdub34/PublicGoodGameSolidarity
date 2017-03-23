@@ -188,7 +188,7 @@ def get_text_summary(period_content):
     or (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR):
 
         if sinistred:
-            txt += trans_PGGS(u"The other group put") + u" {} ".format(
+            txt += u" " + trans_PGGS(u"The other group put") + u" {} ".format(
                 get_pluriel(period_content.get("PGGS_groupaccountsharedsum"),
                             trans_PGGS(u"token"))) + \
                    trans_PGGS(u"in its group account, shared with your group.")
@@ -202,7 +202,7 @@ def get_text_summary(period_content):
                                 pms.MONNAIE))
 
         else:
-            txt += trans_PGGS(u"Each member of the sinistred groups has a "
+            txt += u" " + trans_PGGS(u"Each member of the sinistred groups has a "
                              u"payoff for the period equal to") + \
                   u" {}.".format(
                       get_pluriel(period_content.get("PGGS_groupaccountpayoff"),

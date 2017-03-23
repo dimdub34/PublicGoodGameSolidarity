@@ -165,7 +165,7 @@ class RemotePGGS(IRemote):
             if before_vote:
                 txt = texts_PGGS.get_text_expectation_before()
                 screen = DExpectationBefore(
-                    defer, self.le2mclt.automatique, self.le2mclt.screen, txt)
+                    defered, self.le2mclt.automatique, self.le2mclt.screen, txt)
             else:
                 txt = texts_PGGS.get_text_expectation(expectation_before)
                 screen = DExpectation(

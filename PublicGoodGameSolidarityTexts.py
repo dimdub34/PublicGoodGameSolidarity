@@ -268,9 +268,9 @@ def get_text_expectation(expectation_before=None):
     if expectation_before is not None:
         text = (
             trans_PGGS(u"Now that you know the issue of the vote, would you "
-                       u"change your expectation ({})?<br />This expectation "
-                       u"will replace the expectation you did before.".format(
-                expectation_before)),
+                       u"change your expectation") + u" ({})?<br />".format(
+                expectation_before) + trans_PGGS(u"This expectation "
+                       u"will replace the expectation you did before."),
             trans_PGGS(u"Your expectation")
         )
     else:

@@ -62,9 +62,6 @@ class RemotePGGS(IRemote):
         self.currentperiod = periode
         if self.currentperiod == 1:
             del self.histo[:]
-            histo_headers, self._histo_vars = texts_PGGS.get_histo(
-                pms.TREATMENT, self._sinistred, self._majorityvote)
-            self.histo.append(histo_headers)
 
     def remote_display_decision(self, max_decision):
         """
@@ -94,6 +91,10 @@ class RemotePGGS(IRemote):
 
     def remote_display_summary(self, period_content):
         logger.info(u"{} Summary".format(self.le2mclt.uid))
+        if not self.histo:
+            headers, self._histo_vars = texts_PGGS.get_histo(
+                self._sinistred, self._majorityvote)
+            self.histo.append(headers)
         self.histo.append([period_content.get(k) for k in self._histo_vars])
         if self.le2mclt.simulation:
             return 1

@@ -43,7 +43,7 @@ class GuiDecision(QtGui.QDialog):
 
         wexplanation = WExplication(
             text=texts_PGGS.get_text_explanation(), parent=self,
-            size=(HISTO_WIDTH, 60))
+            size=(500, 60))
         layout.addWidget(wexplanation)
 
         self._wcontrib = WSpinbox(
@@ -432,7 +432,7 @@ class DExpectation(QtGui.QDialog):
         button.accepted.connect(self._accept)
         layout.addWidget(button)
 
-        self.setWindowTitle(trans_PGGS(u"Expectations"))
+        self.setWindowTitle(trans_PGGS(u"Expectation"))
         self.adjustSize()
         self.setFixedSize(self.size())
 
@@ -493,7 +493,7 @@ class DExpectationBefore(QtGui.QDialog):
         button.accepted.connect(self._accept)
         layout.addWidget(button)
 
-        self.setWindowTitle(trans_PGGS(u"Expectations"))
+        self.setWindowTitle(trans_PGGS(u"Expectation"))
         self.adjustSize()
         self.setFixedSize(self.size())
 

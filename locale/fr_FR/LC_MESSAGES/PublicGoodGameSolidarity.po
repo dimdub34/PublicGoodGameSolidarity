@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PGGS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-23 14:22+0100\n"
-"PO-Revision-Date: 2017-03-23 14:24+0100\n"
+"POT-Creation-Date: 2017-03-24 22:21+0100\n"
+"PO-Revision-Date: 2017-03-24 22:27+0100\n"
 "Last-Translator: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language-Team: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language: fr_FR\n"
@@ -25,7 +25,7 @@ msgstr "Pour"
 msgid "Against"
 msgstr "Contre"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:55
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:57
 msgid ""
 "Individual\n"
 "account"
@@ -33,7 +33,7 @@ msgstr ""
 "Compte\n"
 "individuel"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:56
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:58
 msgid ""
 "Group\n"
 "account"
@@ -41,29 +41,7 @@ msgstr ""
 "Compte\n"
 "collectif"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:60
-msgid ""
-"Group\n"
-"account\n"
-"shared"
-msgstr ""
-"Compte\n"
-"collectif\n"
-"partagé"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:67
-msgid ""
-"Total in\n"
-"the shared\n"
-"group account\n"
-"by your group"
-msgstr ""
-"Total dans\n"
-"le compte\n"
-"partagé par\n"
-"votre groupe"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:70
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:59
 msgid ""
 "Total in\n"
 "the group\n"
@@ -73,18 +51,7 @@ msgstr ""
 "le compte\n"
 "collectif"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:77
-msgid ""
-"Total in\n"
-"the shared\n"
-"group account"
-msgstr ""
-"Total sur\n"
-"le compte\n"
-"collectif\n"
-"partagé"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:80
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:61
 msgid ""
 "Payoff\n"
 "from\n"
@@ -95,7 +62,7 @@ msgstr ""
 "compte\n"
 "individuel"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:86
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:63
 msgid ""
 "Payoff\n"
 "from\n"
@@ -106,7 +73,18 @@ msgstr ""
 "compte\n"
 "collectif"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:93
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:72
+msgid ""
+"Total in\n"
+"the shared\n"
+"group account"
+msgstr ""
+"Total sur\n"
+"le compte\n"
+"collectif\n"
+"partagé"
+
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:74
 msgid ""
 "Payoff\n"
 "from the\n"
@@ -118,19 +96,31 @@ msgstr ""
 "collectif\n"
 "partagé"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:103
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:81
+msgid ""
+"Total in\n"
+"the shared\n"
+"group account\n"
+"by your group"
+msgstr ""
+"Total dans\n"
+"le compte\n"
+"partagé par\n"
+"votre groupe"
+
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:89
 msgid "Your group"
 msgstr "Votre groupe"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:104
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:90
 msgid "is sinistred"
 msgstr "est sinistré"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:105
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:91
 msgid "is not sinistred"
 msgstr "n'est pas sinistré"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:110
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:96
 msgid ""
 "You must vote in favour of or against the share of the public account of "
 "your group with a sinistred group."
@@ -138,119 +128,103 @@ msgstr ""
 "Vous devez voter en faveur ou contre le partage du compte collectif de votre "
 "groupe avec un groupe sinistré"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:117
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:103
 msgid "Your group has voted"
 msgstr "Votre groupe a voté"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:119
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:123
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:105
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:109
 msgid "the share of its public account."
 msgstr "le partage de son compte collectif."
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:121
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:107
 msgid "The group has voted"
 msgstr "Le groupe a voté"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:128
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:114
 msgid "You must choose how much tokens you put in the public account."
 msgstr ""
 "Vous devez décider combien de jetons vous placez sur le compte collectif."
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:142
-msgid "You found"
-msgstr "Vous avez trouvé"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:143
-msgid "grid"
-msgstr "Grille"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:153
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:171
-msgid "You put"
-msgstr "Vous avez placé"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:156
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:160
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:165
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:174
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:178
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:193
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:227
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:249
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:123
 msgid "token"
 msgstr "jeton"
 
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:127
+msgid ""
+"you put {} in your individual account and {} in the collective account. Your "
+"group put a total of {} in the collective account."
+msgstr ""
+"Vous avez placé {} sur votre compte individuel et {} sur le compte "
+"collectif. Votre groupe a placé au total {} sur le compte collectif."
+
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:134
+msgid "Your payoff for the period is equal to {} + {} = {}."
+msgstr "Votre gain pour la période est égal à {} + {} = {}."
+
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:145
+msgid ""
+"The other group put {} in its collective account, shared with your group. "
+"Your payoff for the period is equal to {} + {} + {} = {}"
+msgstr ""
+"L'autre groupe a placé {} sur son compte collectif, partagé avec votre "
+"groupe. Votre gain pour la période est égal à {} + {} + {} = {}."
+
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:157
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:175
-msgid "in your individual account and"
-msgstr "sur votre compte individuel et "
+msgid ""
+"Each member of the sinistred groups has a payoff for the period equal to {}. "
+"Your payoff for the period is equal to {} + {} + {} = {}."
+msgstr ""
+"Chaque membre du groupe sinistré a un gain pour la péiode égal à {}. Votre "
+"gain pour la période est égal à {} + {} + {} = {}."
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:161
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:166
-msgid "in the group account."
-msgstr "sur le compte collectif."
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:173
+msgid ""
+"You have found {} and therefore have put {} in the collective account shared "
+"by the other group. Your group put a total of {} in this account. The other "
+"group put {} it its collective account, shared with your group. There are a "
+"total of {} in this account. Your payoff for the period is equal to {} + {} "
+"+ {} = {}."
+msgstr ""
+"Vous avez trouvé {} grilles et avez donc placé {} sur le compte collectif "
+"partagé par l'autre groupe. Votre groupe a placé au total {} sur ce compte. "
+"L'autre groupe a placé {} sur ce compte. Il y a donc au total {} sur ce "
+"compte collectif partagé. Votre gain pour la période est égal à {} + {} + {} "
+"= {}."
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:162
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:180
-msgid "Your group put a total of"
-msgstr "Votre groupe a placé un total de"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:179
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:183
-msgid "in the group account shared by the other group."
-msgstr "dans le compte collectif partagé par l'autre groupe"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:191
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:225
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:247
-msgid "The other group put"
-msgstr "L'autre groupe a placé"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:194
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:228
-msgid "in its group account, shared with your group."
-msgstr "sur son compte collectif, partagé avec votre groupe"
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:182
+msgid "grid"
+msgstr "Grille"
 
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:196
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:211
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:235
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:257
-msgid "Your payoff for the period is equal to"
-msgstr "Votre gain pour la période est de"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:205
 msgid ""
-"Each member of the sinistred groups has a payoff for the period equal to"
-msgstr "Chaque membre du groupe sinistré a un gain pour la période égal à"
+"The other group put {} in your collective account you share you him. There "
+"are therefore a total of {} in this account. Your payoff for the period is "
+"equal to {} + {} = {}."
+msgstr ""
+"L'autre groupe a placé {} sur votre compte collectif, que vous partagez avec "
+"lui. Il y a donc au total {} sur ce compte. Votre gain pour la période est "
+"égal à {} + {} = {}."
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:229
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:251
-msgid "There are therefore"
-msgstr "Il y a donc"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:250
-msgid "in your group account, shared with him."
-msgstr "dans votre compte collectif, partagé avec lui"
-
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:270
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:215
 msgid ""
 "Now that you know the issue of the vote, would you change your expectation"
 msgstr ""
 "Maintenant que vous connaissez l'issue du vote, voulez-vous changer votre "
 "prédiction"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:272
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:217
 msgid "This expectation will replace the expectation you did before."
 msgstr ""
 "Cette prédiction remplacera celle que vous avez faite précédemment (avant le "
 "vote)."
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:274
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:281
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:219
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:226
 msgid "Your expectation"
 msgstr "Votre prédiction"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:278
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:223
 msgid ""
 "How much token(s) do you think the other members of your group will put, on "
 "average, in the collective account?"
@@ -258,7 +232,7 @@ msgstr ""
 "Combien de jeton(s) pensez-vous que les autres membres de votre groupe vont "
 "placer, en moyenne, sur le compte collectif dans la période à venir?"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:288
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:233
 msgid ""
 "How much token(s) do you expect the other members of your group will put, on "
 "average, in the collective account"
@@ -266,7 +240,7 @@ msgstr ""
 "Combien de jeton(s) pensez-vous que les autres membres de votre groupe vont "
 "placer, en moyenne, sur le compte collectif dans la période à venir?"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:291
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:236
 msgid ""
 "if the majority of your group vote in favor of the share of its collective "
 "account?"
@@ -274,7 +248,7 @@ msgstr ""
 "Si la majorité des membres de votre groupe vote en faveur du partage du "
 "compte collectif"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:294
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:239
 msgid ""
 "if the majority of your group vote against the share of its collective "
 "account?"
@@ -282,36 +256,34 @@ msgstr ""
 "Si la majorité des membres de votre groupe vote contre le partage du compte "
 "collectif"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:301
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:246
 msgid "Count the number of 1 in the following grids"
 msgstr "Comptez le nombre de 1 dans les grilles suivantes"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:48
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:52
 msgid "How much do you invest in the public account?"
 msgstr "Combien de jetons placez-vous sur le compte collectif?"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:119
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:123
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:57
 msgid "Number of periods"
 msgstr "Nombre de périodes"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:130
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:134
 msgid "Group size"
 msgstr "Taille de groupe"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:142
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:146
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:61
 msgid "MPCR (normal)"
 msgstr "MPCR (normal)"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:154
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:158
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:62
 msgid "MPCR (solidarity)"
 msgstr "MPCR (solidarity)"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:160
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:431
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:492
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:164
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:63
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:184
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:219
@@ -319,62 +291,67 @@ msgstr "MPCR (solidarity)"
 msgid "Expectations"
 msgstr "Prédictions"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:171
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:175
 msgid "Number of grids"
 msgstr "Nombre de grilles"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:182
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:186
 msgid "Grid size"
 msgstr "Taille de grille"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:223
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:227
 msgid "Your vote"
 msgstr "Votre vote"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:231
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:235
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:189
 msgid "Vote"
 msgstr "Vote"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:255
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:259
 msgid "You must take a decision"
 msgstr "Vous devez prendre une décision"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:293
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:297
 msgid "Display payoff on remotes' screen?"
 msgstr "Afficher les gains sur les écrans des clients?"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:305
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:309
 msgid "Add part's payoffs to final payoffs?"
 msgstr "Ajouter les gains de la partie aux gains finaux"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:312
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:316
 msgid "PGSS payoffs added to final payoffs"
 msgstr "Les gains de PGGS ont été ajoutés aux gains finaux"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:326
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:330
 msgid "Politically, you feel yourself in line with"
 msgstr "Politiquement, vous êtes plutôt"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:389
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:393
 msgid "Choose the sequence to display"
 msgstr "Choisir une séquence à afficher"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:547
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:435
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:496
+msgid "Expectation"
+msgstr "Prédiction"
+
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:551
 msgid "Number of 1: "
 msgstr "Nombre de 1:"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:553
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:557
 msgid "?"
 msgstr "?"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:618
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:622
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:232
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:239
 msgid "Effort"
 msgstr "Effort"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:637
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:641
 msgid "You've found {} grids."
 msgstr "Vous avez trouvé {} grilles."
 
@@ -401,6 +378,52 @@ msgstr "Il faut lancer la partie PGGS avant de lancer le questionnaire final"
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:410
 msgid "Final questionnaire"
 msgstr "Questionnaire final"
+
+#~ msgid ""
+#~ "Group\n"
+#~ "account\n"
+#~ "shared"
+#~ msgstr ""
+#~ "Compte\n"
+#~ "collectif\n"
+#~ "partagé"
+
+#~ msgid "You found"
+#~ msgstr "Vous avez trouvé"
+
+#~ msgid "You put"
+#~ msgstr "Vous avez placé"
+
+#~ msgid "in your individual account and"
+#~ msgstr "sur votre compte individuel et "
+
+#~ msgid "in the group account."
+#~ msgstr "sur le compte collectif."
+
+#~ msgid "Your group put a total of"
+#~ msgstr "Votre groupe a placé un total de"
+
+#~ msgid "in the group account shared by the other group."
+#~ msgstr "dans le compte collectif partagé par l'autre groupe"
+
+#~ msgid "The other group put"
+#~ msgstr "L'autre groupe a placé"
+
+#~ msgid "in its group account, shared with your group."
+#~ msgstr "sur son compte collectif, partagé avec votre groupe"
+
+#~ msgid "Your payoff for the period is equal to"
+#~ msgstr "Votre gain pour la période est de"
+
+#~ msgid ""
+#~ "Each member of the sinistred groups has a payoff for the period equal to"
+#~ msgstr "Chaque membre du groupe sinistré a un gain pour la période égal à"
+
+#~ msgid "There are therefore"
+#~ msgstr "Il y a donc"
+
+#~ msgid "in your group account, shared with him."
+#~ msgstr "dans votre compte collectif, partagé avec lui"
 
 #~ msgid ""
 #~ "Now that you know the issue of the vote, would you change your "

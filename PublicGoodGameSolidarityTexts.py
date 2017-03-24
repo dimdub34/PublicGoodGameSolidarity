@@ -49,52 +49,38 @@ def get_text_inequality():
     return text
 
 
-def get_histo(treatment, sinistred, vote):
+def get_histo(sinistred, vote):
     histo = list()
+    # history for BASELINE, SOL_WITHOUT, SOL_AUTO if not sinistred,
+    # SOL_VOTE if vote == pms.AGAINST, SOL_VOTE if vote=IN_FAVOR and not sinistred
     histo.append((le2mtrans(u"Period"), "PGGS_period"))
     histo.append((trans_PGGS(u"Individual\naccount"), "PGGS_indivaccount"))
     histo.append((trans_PGGS(u"Group\naccount"), "PGGS_groupaccount"))
-
-    if treatment == pms.SOL_AUTO_CONDITIONAL or \
-    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
-        histo.append((trans_PGGS(u"Group\naccount\nshared"),
-                      "PGGS_groupaccountshare"))
-
-    if (treatment == pms.SOL_AUTO_CONDITIONAL and sinistred) or \
-    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
-     sinistred):
-        histo.append(
-            (trans_PGGS(u"Total in\nthe shared\ngroup account\nby your group"),
-             "PGGS_groupaccountsharedsinistredsum"))
-
     histo.append((trans_PGGS(u"Total in\nthe group\naccount"),
-                 "PGGS_groupaccountsum"))
-
-    if (treatment == pms.SOL_AUTO and sinistred) or \
-    (treatment == pms.SOL_VOTE and vote == pms.IN_FAVOR and sinistred) or \
-    treatment == pms.SOL_AUTO_CONDITIONAL or \
-    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
-        histo.append((trans_PGGS(u"Total in\nthe shared\ngroup account"),
-                      "PGGS_groupaccountsharedsum"))
-
+                  "PGGS_groupaccountsum"))
     histo.append((trans_PGGS(u"Payoff\nfrom\nindividual\naccount"),
                   "PGGS_indivaccountpayoff"))
-
-    if treatment == pms.BASELINE or treatment == pms.SOL_WITHOUT or \
-    treatment == pms.SOL_AUTO or treatment == pms.SOL_VOTE or \
-    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.AGAINST):
-        histo.append((trans_PGGS(u"Payoff\nfrom\ngroup\naccount"),
-                      "PGGS_groupaccountpayoff"))
-
-    if (treatment == pms.SOL_AUTO and sinistred) or \
-    (treatment == pms.SOL_VOTE and sinistred and vote == pms.IN_FAVOR) or \
-    treatment == pms.SOL_AUTO_CONDITIONAL or \
-    (treatment == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
-        histo.append((trans_PGGS(u"Payoff\nfrom the\nshared group\naccount"),
-                      "PGGS_groupaccountsharedpayoff"))
-
+    histo.append((trans_PGGS(u"Payoff\nfrom\ngroup\naccount"),
+                  "PGGS_groupaccountpayoff"))
     histo.append((le2mtrans(u"Period\npayoff"), "PGGS_periodpayoff"))
     histo.append((le2mtrans(u"Cumulative\npayoff"), "PGGS_cumulativepayoff"))
+
+    if (pms.TREATMENT == pms.SOL_AUTO and sinistred) or \
+    (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR and sinistred) or \
+    pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
+    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
+        histo.insert(4, (trans_PGGS(u"Total in\nthe shared\ngroup account"),
+                      "PGGS_groupaccountsharedsum"))
+        histo.insert(7, (trans_PGGS(u"Payoff\nfrom the\nshared group\naccount"),
+                      "PGGS_groupaccountsharedpayoff"))
+
+    if (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and sinistred) or \
+    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
+     sinistred):
+        histo.insert(3,
+                     (trans_PGGS(u"Total in\nthe shared\ngroup account\n"
+                                 u"by your group"),
+                      "PGGS_groupaccountsharedsinistredsum"))
 
     return zip(*histo)  # return the_headers, the_vars
 
@@ -134,134 +120,93 @@ def get_text_summary(period_content):
 
     sinistred = period_content.get("PGGS_sinistred")
     vote = period_content.get("PGGS_votemajority")
-    txt = u""
+    get_token = lambda x: get_pluriel(x, trans_PGGS(u"token"))
+    sentences = list()
+
+    sentences.append(
+        trans_PGGS(u"you put {} in your individual account and {} in the "
+                   u"collective account. Your group put a total of "
+                   u"{} in the collective account.").format(
+            get_token(period_content["PGGS_indivaccount"]),
+            get_token(period_content["PGGS_groupaccount"]),
+            get_token(period_content["PGGS_groupaccountsum"])))
+    sentences.append(
+        trans_PGGS(u"Your payoff for the period is equal to {} + {} = {}.").format(
+                    period_content["PGGS_indivaccountpayoff"],
+                    period_content["PGGS_groupaccountpayoff"],
+                    get_pluriel(period_content["PGGS_periodpayoff"],
+                                pms.MONNAIE)))
+
+    if pms.TREATMENT == pms.SOL_AUTO and sinistred  or \
+    (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR):
+        sentences.pop(1)
+        if sinistred:
+            sentences.append(
+                trans_PGGS(u"The other group put {} in its collective "
+                              u"account, shared with your group. Your "
+                              u"payoff for the period is equal to "
+                              u"{} + {} + {} = {}").format(
+                get_token(period_content["PGGS_groupaccountsharedsum"]),
+                period_content["PGGS_indivaccountpayoff"],
+                period_content["PGGS_groupaccountpayoff"],
+                period_content["PGGS_groupaccountsharedpayoff"],
+                get_pluriel(period_content["PGGS_periodpayoff"],
+                                pms.MONNAIE)))
+        else:
+            sentences.append(
+                trans_PGGS(u"Each member of the sinistred groups has a "
+                           u"payoff for the period equal to {}. Your "
+                           u"payoff for the period is equal to "
+                           u"{} + {} + {} = {}.").format(
+                    get_pluriel(period_content.get("PGGS_groupaccountpayoff"),
+                                pms.MONNAIE),
+                    period_content["PGGS_indivaccountpayoff"],
+                    period_content["PGGS_groupaccountpayoff"],
+                    get_pluriel(period_content["PGGS_periodpayoff"],
+                                pms.MONNAIE)))
 
     if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
-    sinistred):
-        txt += trans_PGGS(u"You found") + u" {}. ".format(
-            get_pluriel(period_content.get("PGGS_grids"), trans_PGGS(u"grid")))
-
-    if pms.TREATMENT == pms.BASELINE or \
-    pms.TREATMENT == pms.SOL_WITHOUT or \
-    pms.TREATMENT == pms.SOL_AUTO or \
-    pms.TREATMENT == pms.SOL_VOTE or \
-    (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and not sinistred) or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.AGAINST) or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
-         not sinistred):
-        txt = trans_PGGS(u"You put") + \
-              u" {} ".format(get_pluriel(
-                  period_content.get("PGGS_indivaccount"),
-                  trans_PGGS(u"token"))) + \
-              trans_PGGS(u"in your individual account and") + \
-              u" {} ".format(get_pluriel(
-                  period_content.get("PGGS_groupaccount"),
-                  trans_PGGS(u"token"))) + \
-              trans_PGGS(u"in the group account.") + u"<br />" + \
-              trans_PGGS(u"Your group put a total of") + \
-              u" {} ".format(get_pluriel(
-                  period_content.get("PGGS_groupaccountsum"),
-                  trans_PGGS(u"token"))) + \
-              trans_PGGS(u"in the group account.")
-
-    elif (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and sinistred) or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
-     sinistred):
-        txt += trans_PGGS(u"You put") + \
-               u"{} ".format(get_pluriel(
-                   period_content.get("PGGS_indivaccount"),
-                   trans_PGGS(u"token"))) + \
-               trans_PGGS(u"in your individual account and") + \
-               u"{} ".format(get_pluriel(
-                   period_content.get("PGGS_groupaccountshared"),
-                   trans_PGGS(u"token"))) + \
-               trans_PGGS(u"in the group account shared by the other group.")
-        txt += u" " + trans_PGGS(u"Your group put a total of") + \
-               u" {} ".format(get_pluriel(
-                   period_content.get("PGGS_groupaccountsharedsinistredsum"),
-                   u"token")) + trans_PGGS(u"in the group account shared by "
-                                           u"the other group.")
-
-
-    if pms.TREATMENT == pms.SOL_AUTO \
-    or (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR):
-
-        if sinistred:
-            txt += u" " + trans_PGGS(u"The other group put") + u" {} ".format(
-                get_pluriel(period_content.get("PGGS_groupaccountsharedsum"),
-                            trans_PGGS(u"token"))) + \
-                   trans_PGGS(u"in its group account, shared with your group.")
-            txt += u"<br />" + \
-                   trans_PGGS(u"Your payoff for the period is equal to") + \
-                u" {} + {} + {} = {}.".format(
-                    period_content.get("PGGS_indivaccountpayoff"),
-                    period_content.get("PGGS_groupaccountpayoff"),
-                    period_content.get("PGGS_groupaccountsharedpayoff"),
-                    get_pluriel(period_content.get("PGGS_periodpayoff"),
-                                pms.MONNAIE))
-
-        else:
-            txt += u" " + trans_PGGS(u"Each member of the sinistred groups has a "
-                             u"payoff for the period equal to") + \
-                  u" {}.".format(
-                      get_pluriel(period_content.get("PGGS_groupaccountpayoff"),
-                                  pms.MONNAIE))
-            txt += u"<br />" + \
-                   trans_PGGS(u"Your payoff for the period is equal to") + \
-                u" {} + {} = {}.".format(
-                    period_content.get("PGGS_indivaccountpayoff"),
-                    period_content.get("PGGS_groupaccountpayoff"),
-                    get_pluriel(period_content.get("PGGS_periodpayoff"),
-                                pms.MONNAIE))
-
-    elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
     (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
-
+        sentences.pop(1)
         if sinistred:
-            other_group_in_shared_account = \
-                period_content["PGGS_groupaccountsharedsum"] - \
-                period_content["PGGS_groupaccountsharedsinistredsum"]
-            txt += trans_PGGS(u"The other group put") + u" {} ".format(
-                   get_pluriel(other_group_in_shared_account,
-                            trans_PGGS(u"token"))) + \
-                   trans_PGGS(u"in its group account, shared with your group.")
-            txt += trans_PGGS(u"There are therefore") + \
-                   u" {} ".format(get_pluriel(
-                       period_content["PGGS_groupaccountsharedsum"],
-                       u"token")) + \
-                   u"in the other group account shared with your group."
-            txt += u"<br />" + \
-                   trans_PGGS(u"Your payoff for the period is equal to") + \
-                u" {} + {} + {} = {}.".format(
-                    period_content.get("PGGS_indivaccountpayoff"),
-                    period_content.get("PGGS_groupaccountpayoff"),
-                    period_content.get("PGGS_groupaccountsharedpayoff"),
-                    get_pluriel(period_content.get("PGGS_periodpayoff"),
-                                pms.MONNAIE))
-
+            sentences.append(
+                trans_PGGS(u"You have found {} and therefore have put {} in "
+                           u"the collective account shared by the other "
+                           u"group. Your group put a total of {} in this "
+                           u"account. The other group put {} it its "
+                           u"collective account, shared with your group. "
+                           u"There are a total of {} in this account. Your "
+                           u"payoff for the period is equal to "
+                           u"{} + {} + {} = {}.").format(
+                    get_pluriel(period_content["PGGS_grids"],
+                                trans_PGGS(u"grid")),
+                    get_token(period_content["PGGS_grids"] *
+                              pms.EFFORT_UNIT_VALUE),
+                    get_token(period_content["PGGS_groupaccountsharedsinistredsum"]),
+                    get_token(period_content["PGGS_groupaccountsharedsum"] -
+                period_content["PGGS_groupaccountsharedsinistredsum"]),
+                    get_token(period_content["PGGS_groupaccountsharedsum"]),
+                    period_content["PGGS_indivaccountpayoff"],
+                    period_content["PGGS_groupaccountpayoff"],
+                    period_content["PGGS_groupaccountsharedpayoff"],
+                    get_pluriel(period_content["PGGS_periodpayoff"],
+                                pms.MONNAIE)))
         else:
-            other_group_in_shared_account = \
-                period_content["PGGS_groupaccountsharedsum"] - \
-                period_content["PGGS_groupaccountsum"]
-            txt += trans_PGGS(u"The other group put") + u" {} ".format(
-                   get_pluriel(other_group_in_shared_account,
-                            trans_PGGS(u"token"))) + \
-                   trans_PGGS(u"in your group account, shared with him.")
-            txt += trans_PGGS(u"There are therefore") + \
-                   u" {} ".format(get_pluriel(
-                       period_content["PGGS_groupaccountsharedsum"],
-                       u"token")) + \
-                   u"in the your group account shared with the other."
-            txt += u"<br />" + \
-                   trans_PGGS(u"Your payoff for the period is equal to") + \
-                u" {} + {} = {}.".format(
-                    period_content.get("PGGS_indivaccountpayoff"),
-                    period_content.get("PGGS_groupaccountsharedpayoff"),
-                    get_pluriel(period_content.get("PGGS_periodpayoff"),
-                                pms.MONNAIE))
+            sentences.append(
+                trans_PGGS(u"The other group put {} in your collective "
+                           u"account you share you him. There are "
+                           u"therefore a total of {} in this account. Your "
+                           u"payoff for the period is equal to "
+                           u"{} + {} = {}.".format(
+                    get_token(period_content["PGGS_groupaccountsharedsum"] -
+                period_content["PGGS_groupaccountsum"]),
+                    get_token(period_content["PGGS_groupaccountsharedsum"]),
+                    period_content["PGGS_indivaccountpayoff"],
+                    period_content["PGGS_groupaccountsharedpayoff"],
+                    get_pluriel(period_content["PGGS_periodpayoff"],
+                                pms.MONNAIE))))
 
-    return txt
+    return u"<br />".join(sentences)
 
 
 def get_text_expectation(expectation_before=None):

@@ -31,8 +31,8 @@ class RemotePGGS(IRemote):
         for k, v in params.viewitems():
             setattr(pms, k, v)
 
-    def remote_display_sinistre(self, sinistred):
-        logger.info(u"{} display_sinistre".format(self.le2mclt.uid))
+    def remote_display_infosinistre(self, sinistred):
+        logger.info(u"{} display_info sinistre".format(self.le2mclt.uid))
         self._sinistred = sinistred
         return self.le2mclt.get_remote("base").remote_display_information(
             texts_PGGS.get_text_sinistred(sinistred))
@@ -152,12 +152,12 @@ class RemotePGGS(IRemote):
 
         if self.le2mclt.simulation:
             if before_vote:
+                expectation = (get_random(), get_random())
+            else:
                 if random.randint(0, 1):
                     expectation = expectation_before
                 else:
-                    expectation = (get_random(), get_random())
-            else:
-                expectation = get_random()
+                    expectation = get_random()
             logger.info(u"{} Send back {}".format(self.le2mclt.uid, expectation))
             return expectation
 
@@ -171,7 +171,7 @@ class RemotePGGS(IRemote):
                 txt = texts_PGGS.get_text_expectation(expectation_before)
                 screen = DExpectation(
                     defered, self.le2mclt.automatique, self.le2mclt.screen,
-                    txt)
+                    txt, expectation_before)
             screen.show()
             return defered
 
@@ -187,7 +187,7 @@ class RemotePGGS(IRemote):
             defered = defer.Deferred()
             screen_effort = DEffort(
                 defered, self.le2mclt.automatique, self.le2mclt.screen,
-                grilles)
+                self.currentperiod, self.histo, grilles)
             screen_effort.show()
             return defered
 

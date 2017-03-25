@@ -12,7 +12,7 @@ from client.cltgui.cltguidialogs import GuiHistorique, DQuestFinal
 from server.servgui.servguidialogs import GuiPayoffs
 import PublicGoodGameSolidarityParams as pms
 from client.cltgui.cltguiwidgets import (WExplication, WCombo, WSpinbox,
-                                         WPeriod, WRadio, WCompterebours)
+                                         WPeriod, WRadio, WCompterebours, WGrid)
 import PublicGoodGameSolidarityTexts as texts_PGGS
 from PublicGoodGameSolidarityTexts import trans_PGGS
 
@@ -321,7 +321,7 @@ class DQuestFinalPGGS(DQuestFinal):
     def __init__(self, defered, automatique, parent):
         DQuestFinal.__init__(self, defered, automatique, parent)
 
-        politics = [v for k, v in sorted(texts_PGGS.POLITICS.viewitems())]
+        politics = [v for k, v in sorted(texts_PGGS.POLITICS.items())]
         politics.insert(0, le2mtrans(u"Choose"))
         politics.append(le2mtrans(u"Not in the list above"))
         self._politics = WCombo(
@@ -425,7 +425,7 @@ class DExpectation(QtGui.QDialog):
             interval=pms.DECISION_STEP, label=text[1],
             automatique=self._automatique)
         if expec_before is not None:
-            self._spin_expectation.ui.spinBox.setValue(expec_before)
+            self._spin_expectation.spinBox.setValue(expec_before)
         layout.addWidget(self._spin_expectation)
 
         button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
@@ -525,72 +525,24 @@ class DExpectationBefore(QtGui.QDialog):
         self._defered.callback(expectations)
 
 
-class WGrille(QtGui.QWidget):
-    def __init__(self, parent, grille, automatique):
-        QtGui.QWidget.__init__(self, parent)
-        self._grille = grille
-        self._is_ok = False
-
-        layout = QtGui.QVBoxLayout()
-        self.setLayout(layout)
-
-        webview = QtWebKit.QWebView(self)
-        webview.setHtml(texts_PGGS.get_grille_to_html(self._grille))
-        webview.setFixedSize(160, 160)
-        layout.addWidget(webview)
-
-        form = QtGui.QFormLayout()
-        layout.addLayout(form)
-
-        self._spin_grille =QtGui.QSpinBox()
-        self._spin_grille.setMinimum(0)
-        self._spin_grille.setMaximum(100)
-        self._spin_grille.setSingleStep(1)
-        self._spin_grille.setButtonSymbols(QtGui.QSpinBox.NoButtons)
-        self._spin_grille.setFixedWidth(50)
-        form.addRow(QtGui.QLabel(trans_PGGS("Number of 1: ")),
-                       self._spin_grille)
-
-        self._pushButton_ok = QtGui.QPushButton("Ok")
-        self._pushButton_ok.setFixedWidth(50)
-        self._pushButton_ok.clicked.connect(self._check)
-        self._label_result = QtGui.QLabel(trans_PGGS("?"))
-        form.addRow(self._pushButton_ok, self._label_result)
-
-        if automatique:
-            if randint(0, 1):
-                self._spin_grille.setValue(np.sum(self._grille))
-            else:
-                self._spin_grille.setValue(randint(0, pms.SIZE_GRILLES**2 + 1))
-            self._pushButton_ok.click()
-
-    def _check(self):
-        answer = self._spin_grille.value()
-        if answer == np.sum(self._grille):
-            self._is_ok = True
-            self._label_result.setText("V")
-            self._label_result.setStyleSheet("color: green; font-weight: bold;")
-            self._spin_grille.setEnabled(False)
-            self._pushButton_ok.setEnabled(False)
-        else:
-            self._is_ok = False
-            self._label_result.setText("X")
-            self._label_result.setStyleSheet("color: red; font-weight: bold;")
-
-    def is_ok(self):
-        return self._is_ok
-
-
 class DEffort(QtGui.QDialog):
-    def __init__(self, defered, automatique, parent, grilles):
+    def __init__(self, defered, automatique, parent, periode, historique,
+                 grilles):
         QtGui.QDialog.__init__(self, parent)
 
         self._defered = defered
         self._automatique = automatique
         self._grilles = grilles
+        self._historique = GuiHistorique(self, historique,
+                                         size=(HISTO_WIDTH, 500))
 
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
+
+        # period and history button
+        wperiod = WPeriod(period=periode, ecran_historique=self._historique,
+                          parent=self)
+        layout.addWidget(wperiod)
 
         explanation = WExplication(
             parent=self, text=texts_PGGS.get_text_explanation_grilles())
@@ -606,7 +558,7 @@ class DEffort(QtGui.QDialog):
         self._widgets_grilles = list()
         current_line = 0
         for i, g in enumerate(self._grilles):
-            self._widgets_grilles.append(WGrille(self, g, self._automatique))
+            self._widgets_grilles.append(WGrid(g, self._automatique))
             grid_layout.addWidget(
                 self._widgets_grilles[-1], current_line,
                 i - current_line * pms.NB_GRILLES_PER_LINE)
@@ -627,8 +579,8 @@ class DEffort(QtGui.QDialog):
     def _accept(self):
         if self._countdown.is_running():
             confirmation = QtGui.QMessageBox.question(
-                self, "Confirmation", "Do you want to quit before the end of "
-                                      "the timer?",
+                self, "Confirmation",
+                trans_PGGS(u"Do you want to quit before the end of the timer?"),
                 QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes)
             if confirmation != QtGui.QMessageBox.Yes:
                 return
@@ -638,7 +590,7 @@ class DEffort(QtGui.QDialog):
         if not self._automatique:
             QtGui.QMessageBox.information(
                 self, "Information",
-                trans_PGGS("You've found {} grids.".format(answers)))
+                trans_PGGS(u"You've found {} grids.").format(answers))
         logger.info("send back {}".format(answers))
         self.accept()
         self._defered.callback(answers)
@@ -646,10 +598,11 @@ class DEffort(QtGui.QDialog):
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    # grilles = pms.get_grilles()
+    grilles = pms.get_grilles()
+    screen = DEffort(None, False, None, 1, None, grilles)
     # screen = DEffort(None, False, None, grilles)
-    text = texts_PGGS.get_text_expectation(expectation_before=5)
-    # screen = DExpectationBefore(None, False, None, text)
-    screen = DExpectation(None, False, None, text, 5)
+    # text = texts_PGGS.get_text_expectation(expectation_before=5)
+    # # screen = DExpectationBefore(None, False, None, text)
+    # screen = DExpectation(None, False, None, text, 5)
     screen.show()
     sys.exit(app.exec_())

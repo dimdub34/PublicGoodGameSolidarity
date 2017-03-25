@@ -16,6 +16,10 @@ from PyQt4 import QtGui
 logger = logging.getLogger("le2m.{}".format(__name__))
 
 
+def group_format(group_name):
+    return group_name.split("_")[2]
+
+
 class Serveur(object):
     def __init__(self, le2mserv):
         self._le2mserv = le2mserv
@@ -64,20 +68,17 @@ class Serveur(object):
             ]
             self._le2mserv.gestionnaire_graphique.infoserv(params)
 
+    def _get_group_players(self, group):
+        return [j.get_part("PublicGoodGameSolidarity") for j in
+                self._le2mserv.gestionnaire_groupes.
+                    get_composition_groupe(group)]
+
     @defer.inlineCallbacks
     def _demarrer(self):
         """
         Start the part
         :return:
         """
-        def group_format(group_name):
-            return group_name.split("_")[2]
-
-        def get_group_players(group):
-            return [j.get_part("PublicGoodGameSolidarity") for j in
-                    self._le2mserv.gestionnaire_groupes.
-                        get_composition_groupe(group)]
-
         # check conditions =====================================================
         if self._le2mserv.gestionnaire_joueurs.nombre_joueurs == 0:
             self._le2mserv.gestionnaire_graphique.display_error(
@@ -139,18 +140,18 @@ class Serveur(object):
             yield (self._le2mserv.gestionnaire_experience.run_func(
                 self._tous, "newperiod", period))
 
-            # SINISTRE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # SINISTRE & VOTE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             if period == 1 and pms.TREATMENT != pms.BASELINE:
 
                 # the first ones are not sinistred, the seconds ones are
                 groups_keys = self._le2mserv.gestionnaire_groupes.\
                     get_groupes("PublicGoodGameSolidarity").keys()
-                groups_pairs = zip(
+                self._groups_pairs = zip(
                     groups_keys[:len(groups_keys) // 2],
                     groups_keys[len(groups_keys) // 2:])
                 self._le2mserv.gestionnaire_graphique.infoserv(
                     u"Group pairs (not sinistred, sinistred)")
-                for notsin, sin in groups_pairs:
+                for notsin, sin in self._groups_pairs:
                     self._le2mserv.gestionnaire_graphique.infoserv(
                         u"G" + group_format(notsin) + u"- G" + group_format(
                             sin))
@@ -158,10 +159,10 @@ class Serveur(object):
                 # set sinistred or not in players' data
                 self._not_sinistred_players = list()
                 self._sinistred_players = list()
-                for notsin, sin in groups_pairs:
+                for notsin, sin in self._groups_pairs:
                     self._not_sinistred_players.extend(
-                        get_group_players(notsin))
-                    self._sinistred_players.extend(get_group_players(sin))
+                        self._get_group_players(notsin))
+                    self._sinistred_players.extend(self._get_group_players(sin))
                 for j in self._not_sinistred_players:
                     j.sinistred = False
                     j.currentperiod.PGGS_sinistred = j.sinistred
@@ -174,7 +175,7 @@ class Serveur(object):
                     trans_PGGS(u"Information sinistre"), self._tous,
                     "display_infosinistre"))
 
-                # vote ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                # vote ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 if pms.TREATMENT == pms.SOL_VOTE or \
                 pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
 
@@ -190,9 +191,9 @@ class Serveur(object):
                         "display_vote"))
 
                     # result of the vote
-                    for notsin, sin in groups_pairs:
-                        notsin_p = get_group_players(notsin)
-                        sin_p = get_group_players(sin)
+                    for notsin, sin in self._groups_pairs:
+                        notsin_p = self._get_group_players(notsin)
+                        sin_p = self._get_group_players(sin)
                         votes_for = pms.TAILLE_GROUPES - \
                                     sum([j.vote for j in notsin_p])
                         vote_majority = pms.IN_FAVOR if \
@@ -225,22 +226,11 @@ class Serveur(object):
                         trans_PGGS(u"Expectations"), who,
                         "display_expectations"))
 
-            # EFFORT -----------------------------------------------------------
-            if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
-                grilles = pms.get_grilles()
-                yield (self._le2mserv.gestionnaire_experience.run_step(
-                    trans_PGGS(u"Effort"), self._sinistred_players,
-                    "display_effort", grilles))
-            elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
-                players = [j for j in self._sinistred_players if
-                           j.currentperiod.PGGS_votemajority == pms.IN_FAVOR]
-                grilles = pms.get_grilles()
-                yield (self._le2mserv.gestionnaire_experience.run_step(
-                    trans_PGGS(u"Effort"), players, "display_effort", grilles))
-
             # decision ---------------------------------------------------------
             # the decision screen is displayed on every screen, even when the
             # player cannot contribute
+            # if treatments with conditionality then sinistred players have the
+            # effort screen
             yield(self._le2mserv.gestionnaire_experience.run_step(
                 le2mtrans(u"Decision"), self._tous, "display_decision"))
 
@@ -253,100 +243,7 @@ class Serveur(object):
                 for j in m:
                     j.currentperiod.PGGS_groupaccountsum = group_contrib
 
-            if pms.TREATMENT == pms.SOL_AUTO:
-                # the groupaccountsharedsum value is equal to
-                # groupaccountsum of the non-sinistred group
-                self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
-                for notsin, sin in groups_pairs:
-                    # get the players
-                    notsin_p = get_group_players(notsin)
-                    sin_p = get_group_players(sin)
-                    # get the groupaccountsum of non-sinistred group
-                    notsin_group_contrib = \
-                        notsin_p[0].currentperiod.PGGS_groupaccountsum
-                    # set the value of groupaccountsharedsum in both groups
-                    # to this amount
-                    for j in notsin_p + sin_p:
-                        j.currentperiod.PGGS_groupaccountsharedsum = \
-                            notsin_group_contrib
-                    self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{} - G{}: {}".format(group_format(
-                            notsin), group_format(sin), notsin_group_contrib))
-
-            elif pms.TREATMENT == pms.SOL_VOTE:
-                # if vote in favor then this is as in sol_auto
-                txt_serveur_list = []
-                for notsin, sin in groups_pairs:
-                    # get the players
-                    notsin_p = get_group_players(notsin)
-                    sin_p = get_group_players(sin)
-                    if notsin_p[0].currentperiod.PGGS_votemajority == pms.IN_FAVOR:
-                        # get the groupaccountsum of non-sinistred group
-                        notsin_group_contrib = \
-                            notsin_p[0].currentperiod.PGGS_groupaccountsum
-                        # set the value of groupaccountsharedsum in both groups
-                        # to this amount
-                        for j in notsin_p + sin_p:
-                            j.currentperiod.PGGS_groupaccountsharedsum = \
-                                notsin_group_contrib
-                        txt_serveur_list.append(u"G{} - G{}: {}".format(
-                            group_format(notsin), group_format(sin),
-                            notsin_group_contrib))
-                if txt_serveur_list:
-                    txt_serveur_list.insert(0, u"Shared account")
-                    self._le2mserv.gestionnaire_graphique.infoserv(
-                        txt_serveur_list)
-
-            elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
-                # the groupaccountsharedsum is equal to the sum of the
-                # groupaccountsum of the non-sinistred group + the
-                # sum of the groupaccountshared of the sinistred players
-                self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
-                for notsin, sin in groups_pairs:
-                    # get the players
-                    notsin_p = get_group_players(notsin)
-                    sin_p = get_group_players(sin)
-                    # get the groupaccountsum of non-sinistred group
-                    notsin_group_contrib = \
-                        notsin_p[0].currentperiod.PGGS_groupaccountsum
-                    sin_group_effort = sum(
-                        [j.currentperiod.PGGS_groupaccountshared for j in sin_p])
-                    for j in sin_p:
-                        j.currentperiod.PGGS_groupaccountsharedsinistredsum = \
-                        sin_group_effort
-                    for j in notsin_p + sin_p:
-                        j.currentperiod.PGGS_groupaccountsharedsum = \
-                        notsin_group_contrib + sin_group_effort
-                    self._le2mserv.gestionnaire_graphique.infoserv(
-                        u"G{} - G{}: {}".format(group_format(
-                            notsin), group_format(sin),
-                            notsin_group_contrib + sin_group_effort))
-
-            elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
-                # if vote in favor then this is as in sol_auto_conditional
-                txt_serveur_list = []
-                for notsin, sin in groups_pairs:
-                    # get the players
-                    notsin_p = get_group_players(notsin)
-                    sin_p = get_group_players(sin)
-                    if notsin_p[0].currentperiod.PGGS_votemajority == pms.IN_FAVOR:
-                        # get the groupaccountsum of non-sinistred group
-                        notsin_group_contrib = \
-                            notsin_p[0].currentperiod.PGGS_groupaccountsum
-                        sin_group_effort = sum(
-                            [j.currentperiod.PGGS_groupaccountshared for j in sin_p])
-                        for j in sin_p:
-                            j.currentperiod.PGGS_groupaccountsharedsinistredsum = \
-                                sin_group_effort
-                        for j in notsin_p + sin_p:
-                            j.currentperiod.PGGS_groupaccountsharedsum = \
-                            notsin_group_contrib + sin_group_effort
-                        txt_serveur_list.append(u"G{} - G{}: {}".format(
-                            group_format(notsin), group_format(sin),
-                            notsin_group_contrib + sin_group_effort))
-                if txt_serveur_list:
-                    txt_serveur_list.insert(0, u"Shared account")
-                self._le2mserv.gestionnaire_graphique.infoserv(txt_serveur_list)
+            self._deal_with_decisions()
 
             # compute difference between expectations and realisations ---------
             if period == 1 and pms.EXPECTATIONS:
@@ -410,4 +307,99 @@ class Serveur(object):
             trans_PGGS(u"Final questionnaire"), self._tous,
             "display_questfinal"))
 
+    def _deal_with_decisions(self):
+        if pms.TREATMENT == pms.SOL_AUTO:
+            # the groupaccountsharedsum value is equal to
+            # groupaccountsum of the non-sinistred group
+            self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
+            for notsin, sin in self._groups_pairs:
+                # get the players
+                notsin_p = self._get_group_players(notsin)
+                sin_p = self.get_group_players(sin)
+                # get the groupaccountsum of non-sinistred group
+                notsin_group_contrib = \
+                    notsin_p[0].currentperiod.PGGS_groupaccountsum
+                # set the value of groupaccountsharedsum in both groups
+                # to this amount
+                for j in notsin_p + sin_p:
+                    j.currentperiod.PGGS_groupaccountsharedsum = \
+                        notsin_group_contrib
+                self._le2mserv.gestionnaire_graphique.infoserv(
+                    u"G{} - G{}: {}".format(group_format(
+                        notsin), group_format(sin), notsin_group_contrib))
 
+        elif pms.TREATMENT == pms.SOL_VOTE:
+            # if vote in favor then this is as in sol_auto
+            txt_serveur_list = []
+            for notsin, sin in self._groups_pairs:
+                # get the players
+                notsin_p = self._get_group_players(notsin)
+                sin_p = self._get_group_players(sin)
+                if notsin_p[0].currentperiod.PGGS_votemajority == pms.IN_FAVOR:
+                    # get the groupaccountsum of non-sinistred group
+                    notsin_group_contrib = \
+                        notsin_p[0].currentperiod.PGGS_groupaccountsum
+                    # set the value of groupaccountsharedsum in both groups
+                    # to this amount
+                    for j in notsin_p + sin_p:
+                        j.currentperiod.PGGS_groupaccountsharedsum = \
+                            notsin_group_contrib
+                    txt_serveur_list.append(u"G{} - G{}: {}".format(
+                        group_format(notsin), group_format(sin),
+                        notsin_group_contrib))
+            if txt_serveur_list:
+                txt_serveur_list.insert(0, u"Shared account")
+                self._le2mserv.gestionnaire_graphique.infoserv(
+                    txt_serveur_list)
+
+        elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
+            # the groupaccountsharedsum is equal to the sum of the
+            # groupaccountsum of the non-sinistred group + the
+            # sum of the groupaccountshared of the sinistred players
+            self._le2mserv.gestionnaire_graphique.infoserv(u"Shared account")
+            for notsin, sin in self._groups_pairs:
+                # get the players
+                notsin_p = self._get_group_players(notsin)
+                sin_p = self._get_group_players(sin)
+                # get the groupaccountsum of non-sinistred group
+                notsin_group_contrib = \
+                    notsin_p[0].currentperiod.PGGS_groupaccountsum
+                sin_group_effort = sum(
+                    [j.currentperiod.PGGS_groupaccountshared for j in sin_p])
+                for j in sin_p:
+                    j.currentperiod.PGGS_groupaccountsharedsinistredsum = \
+                        sin_group_effort
+                for j in notsin_p + sin_p:
+                    j.currentperiod.PGGS_groupaccountsharedsum = \
+                        notsin_group_contrib + sin_group_effort
+                self._le2mserv.gestionnaire_graphique.infoserv(
+                    u"G{} - G{}: {}".format(group_format(
+                        notsin), group_format(sin),
+                        notsin_group_contrib + sin_group_effort))
+
+        elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
+            # if vote in favor then this is as in sol_auto_conditional
+            txt_serveur_list = []
+            for notsin, sin in self._groups_pairs:
+                # get the players
+                notsin_p = self._get_group_players(notsin)
+                sin_p = self._get_group_players(sin)
+                if notsin_p[0].currentperiod.PGGS_votemajority == pms.IN_FAVOR:
+                    # get the groupaccountsum of non-sinistred group
+                    notsin_group_contrib = \
+                        notsin_p[0].currentperiod.PGGS_groupaccountsum
+                    sin_group_effort = sum(
+                        [j.currentperiod.PGGS_groupaccountshared for j in
+                         sin_p])
+                    for j in sin_p:
+                        j.currentperiod.PGGS_groupaccountsharedsinistredsum = \
+                            sin_group_effort
+                    for j in notsin_p + sin_p:
+                        j.currentperiod.PGGS_groupaccountsharedsum = \
+                            notsin_group_contrib + sin_group_effort
+                    txt_serveur_list.append(u"G{} - G{}: {}".format(
+                        group_format(notsin), group_format(sin),
+                        notsin_group_contrib + sin_group_effort))
+            if txt_serveur_list:
+                txt_serveur_list.insert(0, u"Shared account")
+            self._le2mserv.gestionnaire_graphique.infoserv(txt_serveur_list)

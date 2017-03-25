@@ -77,10 +77,13 @@ def get_histo(sinistred, vote):
     if (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and sinistred) or \
     (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
      sinistred):
-        histo.insert(3,
-                     (trans_PGGS(u"Total in\nthe shared\ngroup account\n"
-                                 u"by your group"),
-                      "PGGS_groupaccountsharedsinistredsum"))
+        histo.insert(3, (trans_PGGS(u"Shared\ngroup account"),
+                         "PGGS_groupaccountshared"))
+
+    if (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and not sinistred) or \
+    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
+     not sinistred):
+        histo.pop(6)
 
     return zip(*histo)  # return the_headers, the_vars
 
@@ -137,7 +140,7 @@ def get_text_summary(period_content):
                     get_pluriel(period_content["PGGS_periodpayoff"],
                                 pms.MONNAIE)))
 
-    if pms.TREATMENT == pms.SOL_AUTO and sinistred  or \
+    if pms.TREATMENT == pms.SOL_AUTO or \
     (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR):
         sentences.pop(1)
         if sinistred:
@@ -154,10 +157,10 @@ def get_text_summary(period_content):
                                 pms.MONNAIE)))
         else:
             sentences.append(
-                trans_PGGS(u"Each member of the sinistred groups has a "
+                trans_PGGS(u"Each member of the sinistred group has a "
                            u"payoff for the period equal to {}. Your "
                            u"payoff for the period is equal to "
-                           u"{} + {} + {} = {}.").format(
+                           u"{} + {} = {}.").format(
                     get_pluriel(period_content.get("PGGS_groupaccountpayoff"),
                                 pms.MONNAIE),
                     period_content["PGGS_indivaccountpayoff"],
@@ -173,15 +176,12 @@ def get_text_summary(period_content):
                 trans_PGGS(u"You have found {} and therefore have put {} in "
                            u"the collective account shared by the other "
                            u"group. Your group put a total of {} in this "
-                           u"account. The other group put {} it its "
-                           u"collective account, shared with your group. "
+                           u"account and the other group {}. "
                            u"There are a total of {} in this account. Your "
                            u"payoff for the period is equal to "
                            u"{} + {} + {} = {}.").format(
-                    get_pluriel(period_content["PGGS_grids"],
-                                trans_PGGS(u"grid")),
-                    get_token(period_content["PGGS_grids"] *
-                              pms.EFFORT_UNIT_VALUE),
+                    get_pluriel(period_content["PGGS_grids"], trans_PGGS(u"grid")),
+                    get_token(period_content["PGGS_groupaccountshared"]),
                     get_token(period_content["PGGS_groupaccountsharedsinistredsum"]),
                     get_token(period_content["PGGS_groupaccountsharedsum"] -
                 period_content["PGGS_groupaccountsharedsinistredsum"]),
@@ -193,18 +193,21 @@ def get_text_summary(period_content):
                                 pms.MONNAIE)))
         else:
             sentences.append(
-                trans_PGGS(u"The other group put {} in your collective "
+                trans_PGGS(u"The other group put {} in the collective "
                            u"account you share you him. There are "
-                           u"therefore a total of {} in this account. Your "
+                           u"therefore a total of {} in this account. Each "
+                           u"member of the sinistred group has a "
+                           u"payoff for the period equal to {}. Your "
                            u"payoff for the period is equal to "
-                           u"{} + {} = {}.".format(
+                           u"{} + {} = {}.").format(
                     get_token(period_content["PGGS_groupaccountsharedsum"] -
                 period_content["PGGS_groupaccountsum"]),
                     get_token(period_content["PGGS_groupaccountsharedsum"]),
+                    period_content["PGGS_groupaccountsharedpayoff"],
                     period_content["PGGS_indivaccountpayoff"],
                     period_content["PGGS_groupaccountsharedpayoff"],
                     get_pluriel(period_content["PGGS_periodpayoff"],
-                                pms.MONNAIE))))
+                                pms.MONNAIE)))
 
     return u"<br />".join(sentences)
 

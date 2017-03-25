@@ -42,15 +42,15 @@ class PartiePGGS(Partie):
     def vote(self):
         return self._vote
 
+    @property
+    def votemajority(self):
+        return self._votemajority
+
     def set_votes(self, votesfor, votemajority):
         self._votesfor = votesfor
         self._votemajority = votemajority
         self.currentperiod.PGGS_voteforgroup = self._votesfor
         self.currentperiod.PGGS_votemajority = self._votemajority
-
-    @property
-    def votemajority(self):
-        return self._votemajority
 
     @sinistred.setter
     def sinistred(self, true_or_false):
@@ -86,7 +86,7 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_infosinistre(self):
         logger.debug(u"{} info sinistre".format(self.joueur))
-        yield (self.remote.callRemote("display_sinistre", self._sinistred))
+        yield (self.remote.callRemote("display_infosinistre", self._sinistred))
         self.joueur.info(u"Ok")
         self.joueur.remove_waitmode()
 
@@ -107,68 +107,39 @@ class PartiePGGS(Partie):
     @defer.inlineCallbacks
     def display_decision(self):
         logger.debug(u"{} Decision".format(self.joueur))
-
-        # define the endowment of the subject, depending on the treatment
-        # and the result of the vote
-        if not self.currentperiod.PGGS_sinistred:
-            max_decision = pms.DECISION_MAX
-        else:
-            if pms.TREATMENT == pms.SOL_WITHOUT or \
-            pms.TREATMENT == pms.SOL_VOTE or \
-            pms.TREATMENT == pms.SOL_AUTO or \
-            (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
-             self.votemajority == pms.AGAINST):
-                max_decision = 0
-            else:
-                max_decision = self.currentperiod.PGGS_grids * \
-                               pms.EFFORT_UNIT_VALUE
-
         debut = datetime.now()
 
-        decision = yield(self.remote.callRemote(
-                "display_decision", max_decision))
-
-        # contribution to the collective account / shared or not ---------------
-        if pms.TREATMENT == pms.BASELINE or pms.TREATMENT == pms.SOL_WITHOUT or \
-        pms.TREATMENT == pms.SOL_AUTO or pms.TREATMENT == pms.SOL_VOTE:
-            self.currentperiod.PGGS_groupaccount = decision
+        if not self.currentperiod.PGGS_sinistred:
+            self.currentperiod.PGGS_groupaccount = yield (
+                self.remote.callRemote("display_decision", pms.DECISION_MAX))
+            self.currentperiod.PGGS_indivaccount = pms.DECISION_MAX - \
+                self.currentperiod.PGGS_groupaccount
+            self.joueur.info(u"{}".format(self.currentperiod.PGGS_groupaccount))
 
         else:
-            if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL:
-                if not self.sinistred:
-                    self.currentperiod.PGGS_groupaccount = decision
-                else:
-                    self.currentperiod.PGGS_groupaccountshared = decision
+            if pms.TREATMENT == pms.SOL_WITHOUT or \
+                pms.TREATMENT == pms.SOL_AUTO or \
+                pms.TREATMENT == pms.SOL_VOTE or \
+                (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
+                 self.currentperiod.PGGS_votemajority == pms.AGAINST):
+                self.currentperiod.PGGS_groupaccount = yield (
+                    self.remote.callRemote("display_decision", 0))
+                self.currentperiod.PGGS_indivaccount = 0
+                self.joueur.info(
+                    u"{}".format(self.currentperiod.PGGS_groupaccount))
 
-            elif pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL:
-                if self.votemajority == pms.AGAINST:
-                    self.currentperiod.PGGS_groupaccount = decision
-                else:
-                    if not self.sinistred:
-                        self.currentperiod.PGGS_groupaccount = decision
-                    else:
-                        self.currentperiod.PGGS_groupaccountshared = decision
+            elif pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
+                (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
+                 self.currentperiod.PGGS_votemajority == pms.IN_FAVOR):
+                self.currentperiod.PGGS_grids = yield (
+                    self.remote.callRemote("display_effort", pms.get_grilles()))
+                self.currentperiod.PGGS_groupaccountshared = \
+                self.currentperiod.PGGS_grids * pms.EFFORT_UNIT_VALUE
+                self.joueur.info(u"Effort {} - Contrib {}".format(
+                    self.currentperiod.PGGS_grids,
+                    self.currentperiod.PGGS_groupaccountshared))
 
         self.currentperiod.PGGS_decisiontime = (datetime.now() - debut).seconds
-
-        # individual account ---------------------------------------------------
-        if not self.sinistred:
-            self.currentperiod.PGGS_indivaccount = \
-                pms.DECISION_MAX - self.currentperiod.PGGS_groupaccount
-
-        else:
-            if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
-            (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and
-            self.votemajority == pms.IN_FAVOR):
-                self.currentperiod.PGGS_indivaccount = \
-                self.currentperiod.PGGS_grids * pms.EFFORT_UNIT_VALUE - \
-                self.currentperiod.PGGS_groupaccountshared
-
-            else:
-                self.currentperiod.PGGS_indivaccount = 0
-
-        # ----------------------------------------------------------------------
-        self.joueur.info(u"{}".format(self.currentperiod.PGGS_groupaccount))
         self.joueur.remove_waitmode()
 
     def compute_periodpayoff(self):
@@ -326,20 +297,20 @@ class PartiePGGS(Partie):
             self.currentperiod.PGGS_expectation_payoff))
         self.joueur.remove_waitmode()
 
-    @defer.inlineCallbacks
-    def display_effort(self, grilles):
-        """
-        the grids are arguments because we want that each player faces the
-        same grids. Grids are then displayed on the client side. We get back
-        the number of grids successfully counted.
-        :param grilles:
-        :return:
-        """
-        logger.debug(u"{} display_effort".format(self.joueur))
-        self.currentperiod.PGGS_grids = yield (
-            self.remote.callRemote("display_effort", grilles))
-        self.joueur.info(u"{}".format(self.currentperiod.PGGS_grids))
-        self.joueur.remove_waitmode()
+    # @defer.inlineCallbacks
+    # def display_effort(self, grilles):
+    #     """
+    #     the grids are arguments because we want that each player faces the
+    #     same grids. Grids are then displayed on the client side. We get back
+    #     the number of grids successfully counted.
+    #     :param grilles:
+    #     :return:
+    #     """
+    #     logger.debug(u"{} display_effort".format(self.joueur))
+    #     self.currentperiod.PGGS_grids = yield (
+    #         self.remote.callRemote("display_effort", grilles))
+    #     self.joueur.info(u"{}".format(self.currentperiod.PGGS_grids))
+    #     self.joueur.remove_waitmode()
 
 
 class RepetitionsPGGS(Base):

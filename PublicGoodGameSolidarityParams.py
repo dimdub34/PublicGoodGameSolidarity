@@ -5,9 +5,8 @@ Variables must not be changed
 Some parameters can be changed. For safety reasons please contact the
 developer
 """
-import numpy as np
-from random import randint
 from datetime import time
+from util import utiltools
 
 # variables
 BASELINE = 0
@@ -52,12 +51,4 @@ def get_payoff_expectation(expectation, average_others):
 
 
 def get_grilles():
-    grilles = list()
-    for g in range(NB_GRILLES):
-        somme, grille = 0, []
-        while somme < (0.2 * SIZE_GRILLES**2) or somme > (0.8 * SIZE_GRILLES**2):
-            grille = [[randint(0, 1) for _ in range(SIZE_GRILLES)]
-                      for _ in range(SIZE_GRILLES)]
-            somme = np.sum(grille)
-        grilles.append(grille)
-    return grilles
+    return utiltools.get_grids(NB_GRILLES, SIZE_GRILLES)

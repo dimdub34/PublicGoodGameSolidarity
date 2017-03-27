@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
 import sys
 import logging
-from PyQt4 import QtGui, QtCore, QtWebKit
+from PyQt4 import QtGui, QtCore
 from twisted.internet import defer
-import numpy as np
 from random import randint
 from util.utili18n import le2mtrans
 from client.cltgui.cltguidialogs import GuiHistorique, DQuestFinal

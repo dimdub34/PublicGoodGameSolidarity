@@ -569,7 +569,7 @@ class DEffort(QtGui.QDialog):
 
         self.adjustSize()
         self.setFixedSize(self.size())
-        self.setWindowTitle(trans_PGGS("Effort"))
+        self.setWindowTitle(trans_PGGS(u"Tâches"))
 
     def reject(self):
         pass

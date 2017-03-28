@@ -246,7 +246,9 @@ def get_text_expectation_before():
 
 
 def get_text_explanation_grilles():
-    text = trans_PGGS("Count the number of 1 in the following grids")
+    text = trans_PGGS(u"")
+    text += u"\n"
+    text += trans_PGGS("Count the number of 1 in the following grids")
     return text
 
 

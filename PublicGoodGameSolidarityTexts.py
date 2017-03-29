@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 from util.utili18n import le2mtrans
 from util.utiltools import get_pluriel
-import PublicGoodGameSolidarityParams as pms
+from PublicGoodGameSolidarityParams import *
 import os
 import configuration.configparam as params
 import gettext
@@ -20,8 +20,8 @@ except (AttributeError, IOError):
 
 
 VOTES = {
-    pms.IN_FAVOR: trans_PGGS(u"In favor of"),
-    pms.AGAINST: trans_PGGS(u"Against")
+    IN_FAVOR: trans_PGGS(u"In favor of"),
+    AGAINST: trans_PGGS(u"Against")
 }
 
 
@@ -52,7 +52,7 @@ def get_text_inequality():
 def get_histo(sinistred, vote):
     histo = list()
     # history for BASELINE, SOL_WITHOUT, SOL_AUTO if not sinistred,
-    # SOL_VOTE if vote == pms.AGAINST, SOL_VOTE if vote=IN_FAVOR and not sinistred
+    # SOL_VOTE if vote == AGAINST, SOL_VOTE if vote=IN_FAVOR and not sinistred
     histo.append((le2mtrans(u"Period"), "PGGS_period"))
     histo.append((trans_PGGS(u"Individual\naccount"), "PGGS_indivaccount"))
     histo.append((trans_PGGS(u"Group\naccount"), "PGGS_groupaccount"))
@@ -65,23 +65,26 @@ def get_histo(sinistred, vote):
     histo.append((le2mtrans(u"Period\npayoff"), "PGGS_periodpayoff"))
     histo.append((le2mtrans(u"Cumulative\npayoff"), "PGGS_cumulativepayoff"))
 
-    if (pms.TREATMENT == pms.SOL_AUTO and sinistred) or \
-    (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR and sinistred) or \
-    pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
+    if (TREATMENT == SOL_AUTO and sinistred) or \
+    (TREATMENT == SOL_VOTE and vote == IN_FAVOR and sinistred) or \
+    TREATMENT == SOL_AUTO_CONDITIONAL or \
+    (TREATMENT == SOL_VOTE_CONDITIONAL and vote == IN_FAVOR):
         histo.insert(4, (trans_PGGS(u"Total in\nthe shared\ngroup account"),
                       "PGGS_groupaccountsharedsum"))
         histo.insert(7, (trans_PGGS(u"Payoff\nfrom the\nshared group\naccount"),
                       "PGGS_groupaccountsharedpayoff"))
 
-    if (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and sinistred) or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
+    if (TREATMENT == SOL_AUTO_CONDITIONAL and sinistred) or \
+    (TREATMENT == SOL_VOTE_CONDITIONAL and vote == IN_FAVOR and
      sinistred):
         histo.insert(3, (trans_PGGS(u"Shared\ngroup account"),
                          "PGGS_groupaccountshared"))
+        histo.insert(4, (trans_PGGS(u"Total in\nthe shared\naccount by\n"
+                                   u"your group"),
+                         "PGGS_groupaccountsharedsinistredsum"))
 
-    if (pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL and not sinistred) or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR and
+    if (TREATMENT == SOL_AUTO_CONDITIONAL and not sinistred) or \
+    (TREATMENT == SOL_VOTE_CONDITIONAL and vote == IN_FAVOR and
      not sinistred):
         histo.pop(6)
 
@@ -138,10 +141,10 @@ def get_text_summary(period_content):
                     period_content["PGGS_indivaccountpayoff"],
                     period_content["PGGS_groupaccountpayoff"],
                     get_pluriel(period_content["PGGS_periodpayoff"],
-                                pms.MONNAIE)))
+                                MONNAIE)))
 
-    if pms.TREATMENT == pms.SOL_AUTO or \
-    (pms.TREATMENT == pms.SOL_VOTE and vote == pms.IN_FAVOR):
+    if TREATMENT == SOL_AUTO or \
+    (TREATMENT == SOL_VOTE and vote == IN_FAVOR):
         sentences.pop(1)
         if sinistred:
             sentences.append(
@@ -154,7 +157,7 @@ def get_text_summary(period_content):
                 period_content["PGGS_groupaccountpayoff"],
                 period_content["PGGS_groupaccountsharedpayoff"],
                 get_pluriel(period_content["PGGS_periodpayoff"],
-                                pms.MONNAIE)))
+                                MONNAIE)))
         else:
             sentences.append(
                 trans_PGGS(u"Each member of the sinistred group has a "
@@ -162,14 +165,14 @@ def get_text_summary(period_content):
                            u"payoff for the period is equal to "
                            u"{} + {} = {}.").format(
                     get_pluriel(period_content.get("PGGS_groupaccountpayoff"),
-                                pms.MONNAIE),
+                                MONNAIE),
                     period_content["PGGS_indivaccountpayoff"],
                     period_content["PGGS_groupaccountpayoff"],
                     get_pluriel(period_content["PGGS_periodpayoff"],
-                                pms.MONNAIE)))
+                                MONNAIE)))
 
-    if pms.TREATMENT == pms.SOL_AUTO_CONDITIONAL or \
-    (pms.TREATMENT == pms.SOL_VOTE_CONDITIONAL and vote == pms.IN_FAVOR):
+    if TREATMENT == SOL_AUTO_CONDITIONAL or \
+    (TREATMENT == SOL_VOTE_CONDITIONAL and vote == IN_FAVOR):
         sentences.pop(1)
         if sinistred:
             sentences.append(
@@ -190,7 +193,7 @@ def get_text_summary(period_content):
                     period_content["PGGS_groupaccountpayoff"],
                     period_content["PGGS_groupaccountsharedpayoff"],
                     get_pluriel(period_content["PGGS_periodpayoff"],
-                                pms.MONNAIE)))
+                                MONNAIE)))
         else:
             sentences.append(
                 trans_PGGS(u"The other group put {} in the collective "
@@ -207,7 +210,7 @@ def get_text_summary(period_content):
                     period_content["PGGS_indivaccountpayoff"],
                     period_content["PGGS_groupaccountsharedpayoff"],
                     get_pluriel(period_content["PGGS_periodpayoff"],
-                                pms.MONNAIE)))
+                                MONNAIE)))
 
     return u"<br />".join(sentences)
 
@@ -246,9 +249,12 @@ def get_text_expectation_before():
 
 
 def get_text_explanation_grilles():
-    text = trans_PGGS(u"")
-    text += u"\n"
-    text += trans_PGGS("Count the number of 1 in the following grids")
+    text = trans_PGGS(u"If you want to, you can contribute to the collective "
+                      u"account shared by the other group, by realizing the "
+                      u"tasks below. The task consists in counting the number "
+                      u"of 1 in the grid. For aach grid for which you find the "
+                      u"right number of 1 you put {} in the shared collective "
+                      u"account.".format(EFFORT_UNIT_VALUE))
     return text
 
 

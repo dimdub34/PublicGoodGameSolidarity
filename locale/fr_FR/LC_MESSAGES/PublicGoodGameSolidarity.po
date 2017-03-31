@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PGGS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-31 10:59+0200\n"
-"PO-Revision-Date: 2017-03-31 11:00+0200\n"
+"POT-Creation-Date: 2017-03-31 13:32+0200\n"
+"PO-Revision-Date: 2017-03-31 13:33+0200\n"
 "Last-Translator: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language-Team: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language: fr_FR\n"
@@ -354,15 +354,15 @@ msgstr "Choisir une séquence à afficher"
 msgid "Expectation"
 msgstr "Prédiction"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:572
-msgid "Tâches"
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:573
+msgid "Tasks"
 msgstr "Tâches"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:581
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:582
 msgid "Do you want to quit before the end of the timer?"
 msgstr "Voulez-vous arrêter avant la fin du temps imparti?"
 
-#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:591
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityGui.py:592
 msgid "You've found {} grids."
 msgstr "Vous avez trouvé {} grilles."
 
@@ -389,6 +389,9 @@ msgstr "Il faut lancer la partie PGGS avant de lancer le questionnaire final"
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityServ.py:307
 msgid "Final questionnaire"
 msgstr "Questionnaire final"
+
+#~ msgid "Tâches"
+#~ msgstr "Tâches"
 
 #~ msgid "Count the number of 1 in the following grids"
 #~ msgstr "Comptez le nombre de 1 dans les grilles suivantes"

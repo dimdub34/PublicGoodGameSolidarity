@@ -14,7 +14,7 @@ from client.cltgui.cltguiwidgets import (WExplication, WCombo, WSpinbox,
 import PublicGoodGameSolidarityTexts as texts_PGGS
 from PublicGoodGameSolidarityTexts import trans_PGGS
 
-HISTO_WIDTH = 1000
+HISTO_WIDTH = 1100
 
 
 logger = logging.getLogger("le2m")
@@ -543,7 +543,8 @@ class DEffort(QtGui.QDialog):
         layout.addWidget(wperiod)
 
         explanation = WExplication(
-            parent=self, text=texts_PGGS.get_text_explanation_grilles())
+            parent=self, text=texts_PGGS.get_text_explanation_grilles(),
+            size=(600, 100))
         layout.addWidget(explanation)
 
         self._countdown = WCompterebours(
@@ -569,7 +570,7 @@ class DEffort(QtGui.QDialog):
 
         self.adjustSize()
         self.setFixedSize(self.size())
-        self.setWindowTitle(trans_PGGS(u"Tâches"))
+        self.setWindowTitle(trans_PGGS(u"Tasks"))
 
     def reject(self):
         pass

@@ -254,7 +254,7 @@ def get_text_explanation_grilles():
                       u"tasks below. The task consists in counting the number "
                       u"of 1 in the grid. For aach grid for which you find the "
                       u"right number of 1 you put {} in the shared collective "
-                      u"account.".format(pms.EFFORT_UNIT_VALUE))
+                      u"account.").format(pms.EFFORT_UNIT_VALUE)
     return text
 
 

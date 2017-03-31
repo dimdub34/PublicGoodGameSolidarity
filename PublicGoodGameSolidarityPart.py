@@ -38,6 +38,10 @@ class PartiePGGS(Partie):
     def sinistred(self):
         return self._sinistred
 
+    @sinistred.setter
+    def sinistred(self, true_or_false):
+        self._sinistred = true_or_false
+
     @property
     def vote(self):
         return self._vote
@@ -51,10 +55,6 @@ class PartiePGGS(Partie):
         self._votemajority = votemajority
         self.currentperiod.PGGS_voteforgroup = self._votesfor
         self.currentperiod.PGGS_votemajority = self._votemajority
-
-    @sinistred.setter
-    def sinistred(self, true_or_false):
-        self._sinistred = true_or_false
 
     @property
     def sequences(self):
@@ -219,8 +219,9 @@ class PartiePGGS(Partie):
         self.PGGS_gain_euros = float("{:.2f}".format(
             float(self.PGGS_gain_ecus) * float(pms.TAUX_CONVERSION)))
         # ajout des expectations
-        expectations_payoffs = sum([p.PGGS_expectation_payoff for p in
-                                    self.repetitions])
+        expectations_payoffs = sum(
+            [p.PGGS_expectation_payoff for p in self.repetitions if
+             p.partie_partie_id == self.partie_id])
         self.joueur.info(u"PP {}, EP {}".format(
             self.PGGS_gain_euros, expectations_payoffs))
         self.PGGS_gain_euros += expectations_payoffs

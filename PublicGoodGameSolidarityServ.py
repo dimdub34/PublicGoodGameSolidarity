@@ -249,8 +249,8 @@ class Serveur(object):
             if period == 1 and pms.EXPECTATIONS:
                 self._le2mserv.gestionnaire_graphique.infoclt(
                     u"EXPECTATION PAYOFFS")
-                who = self._not_sinistred_players if \
-                    pms.TREATMENT != pms.BASELINE else self._tous
+                who = self._tous if pms.TREATMENT == pms.BASELINE else \
+                    self._not_sinistred_players
                 yield (self._le2mserv.gestionnaire_experience.run_func(
                  who, "compute_expectations_payoffs"))
 

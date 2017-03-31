@@ -22,7 +22,7 @@ class RemotePGGS(IRemote):
         self._histo_vars = []
         self._currentsequence = 0
         self._sinistred = False
-        self._majorityvote = pms.AGAINST
+        self._majorityvote = 0
         self._payoffs = {}
 
     def remote_configure(self, params, currentsequence):

@@ -94,6 +94,7 @@ class PartiePGGS(Partie):
     def display_vote(self):
         logger.debug(u"{} vote".format(self.joueur))
         self._vote = yield (self.remote.callRemote("display_vote"))
+        self.currentperiod.PGGS_vote = self.vote
         self.joueur.info(texts_PGGS.VOTES.get(self.vote))
         self.joueur.remove_waitmode()
 

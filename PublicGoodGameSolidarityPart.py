@@ -221,7 +221,7 @@ class PartiePGGS(Partie):
         # ajout des expectations
         expectations_payoffs = sum(
             [p.PGGS_expectation_payoff for p in self.repetitions if
-             p.partie_partie_id == self.partie_id])
+             p.PGGS_sequence == self._currentsequence])
         self.joueur.info(u"PP {}, EP {}".format(
             self.PGGS_gain_euros, expectations_payoffs))
         self.PGGS_gain_euros += expectations_payoffs

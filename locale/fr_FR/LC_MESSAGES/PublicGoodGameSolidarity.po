@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PGGS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-12 08:49+0200\n"
-"PO-Revision-Date: 2017-04-12 08:50+0200\n"
+"POT-Creation-Date: 2017-04-12 08:52+0200\n"
+"PO-Revision-Date: 2017-04-12 08:52+0200\n"
 "Last-Translator: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language-Team: Dimitri DUBOIS <dimitri.dubois@umontpellier.fr>\n"
 "Language: fr_FR\n"
@@ -159,6 +159,7 @@ msgstr ""
 "Vous devez décider combien de jetons vous placez sur le compte collectif."
 
 #: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:129
+#: /home/dimitri/Documents/travail/programmes/le2m-v2.1/le2m/parts/PublicGoodGameSolidarity/PublicGoodGameSolidarityTexts.py:258
 msgid "token"
 msgstr "jeton"
 

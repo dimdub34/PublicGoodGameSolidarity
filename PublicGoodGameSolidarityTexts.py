@@ -255,7 +255,7 @@ def get_text_explanation_grilles():
                       u"of 1 in the grid. For aach grid for which you find the "
                       u"right number of 1 you put {} in the shared collective "
                       u"account.").format(
-        get_pluriel(pms.EFFORT_UNIT_VALUE, u"token"))
+        get_pluriel(pms.EFFORT_UNIT_VALUE, trans_PGGS(u"token")))
     return text
 
 

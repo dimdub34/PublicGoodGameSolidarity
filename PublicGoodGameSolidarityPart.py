@@ -219,13 +219,14 @@ class PartiePGGS(Partie):
         self.PGGS_gain_ecus = self.currentperiod.PGGS_cumulativepayoff
         self.PGGS_gain_euros = float("{:.2f}".format(
             float(self.PGGS_gain_ecus) * float(pms.TAUX_CONVERSION)))
-        # ajout des expectations
-        expectations_payoffs = sum(
-            [p.PGGS_expectation_payoff for p in self.repetitions if
-             p.PGGS_sequence == self._currentsequence])
-        self.joueur.info(u"PP {}, EP {}".format(
-            self.PGGS_gain_euros, expectations_payoffs))
-        self.PGGS_gain_euros += expectations_payoffs
+        if pms.EXPECTATIONS:
+            # ajout des expectations
+            expectations_payoffs = sum(
+                [p.PGGS_expectation_payoff for p in self.repetitions if
+                 p.PGGS_sequence == self._currentsequence])
+            self.joueur.info(u"PP {}, EP {}".format(
+                self.PGGS_gain_euros, expectations_payoffs))
+            self.PGGS_gain_euros += expectations_payoffs
         yield (self.remote.callRemote(
             "set_payoffs", self.PGGS_gain_euros, self.PGGS_gain_ecus))
 
